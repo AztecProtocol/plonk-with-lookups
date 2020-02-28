@@ -657,10 +657,10 @@ we have
 
 \end{claim}
 \begin{proof}
- We first write $F,G$ as elements of $\F(\beta)[\gamma]$ while taking out a $(1+\beta)$ factor as follows.
-\[f(\beta,\gamma) = (1+\beta)^{n+d-1}\cdot \prod_{i\in [n]} (\gamma + a_i) \prod_{i\in [d-1]} \left(\gamma + (t_i + \beta t_{i+1})/(1+\beta)\right)\]
+ We first write $f,g$ as elements of $\F(\beta)[\gamma]$ while taking out a $(1+\beta)$ factor as follows.
+\[F(\beta,\gamma) = (1+\beta)^{n+d-1}\cdot \prod_{i\in [n]} (\gamma + a_i) \prod_{i\in [d-1]} \left(\gamma + (t_i + \beta t_{i+1})/(1+\beta)\right)\]
                                   
-\[g(\beta,\gamma)  = (1+\beta)^{n+d-1} \prod_{i\in [n+d-1]} \left( \gamma+ (s_i + \beta s_{i+1})/(1+\beta) \right)\]
+\[G(\beta,\gamma)  = (1+\beta)^{n+d-1} \prod_{i\in [n+d-1]} \left( \gamma+ (s_i + \beta s_{i+1})/(1+\beta) \right)\]
  
  
  Suppose that $a\subset t$ and $s\in \F^{n+d}$ is $(a,t)$ sorted by $t$.
@@ -692,7 +692,44 @@ we have
  \end{proof}
  
  Claim \ref{clm:main_lookup} motivates the following protocol.
- 
+ Let $H=\set{\hgen,\ldots,\hgen^{n+d}}$, $H_1\defeq \set{\hgen,\ldots,\hgen^n}, H_2 \defeq \set{\hgen^{n+1},\ldots\hgen^{n+d}}$
+ \paragraph{Preprocessed polynomials:}
+The polynomial $t \in \polysofdeg{d}$  describing the lookup values .
+
+
+\paragraph{Inputs: $f\in \polysofdeg{n}$}
+\paragraph{Protocol:}
+\begin{enumerate}
+ \item \prvpoly computes a polynomial $s\in \polysofdeg{n+d}$ that, identifying polynomials with vectors in $\F^{n+d}$ according to their values on $H$, is $(f,t)$ sorted by $t$.
+ \item \prvpoly sends $s$ to \ideal.
+ \item \verpoly chooses random $\beta,\gamma \in \F$ and sends them to \prvpoly.
+ \item \prvpoly computes a polynomial $Z\in \polysofdeg{n+d}$ that aggregates the value $F(\beta,\gamma)/G(\beta,\gamma)$ where $F,G$ are as described above. Specifically, we let
+\begin{enumerate}
+ \item  $Z(\hgen) = 1$,
+\item $Z(\hgen^i)=\prod_{1\leq j<i} (\gamma + f(\hgen^j))/(\gamma(1+\beta) + s(\hgen^j) + \beta s(\hgen^{j+1}))$, for $2\leq i \leq n+1$
+\item \[Z(\hgen^{n+i})= \prod_{j\in [n]} (\gamma + f_j)\cdot \prod_{1\leq j < i} (\gamma(1+\beta) t_j + \beta t_{j+1})/\left(\prod_{1\leq j < n+i} (\gamma(1+\beta) s_j + \beta s_{j+1})\right).\]
+ and
+\end{enumerate}
+ \item \prvpoly sends $Z$ to \ideal.
+ \item \verpoly checks that $Z$ is of the form described similarly to the PLONK perm argument and
+ that $Z(\hgen^{n+d})=1$.
+ (TODO:write exact ver equations)
+%  \begin{enumerate}
+%   \item $L_1(a) (Z(a)-1) =0$.
+%   \item $Z(a)f'(a) = g'(a)Z(a\cdot \hgen)$.
+%  \end{enumerate}
+ and outputs \acc iff all checks hold.
+\end{enumerate}
+\begin{lemma}\label{lem:lookupprot}
+ Suppose that $\sett{f(\hgen^i)}{i\in [n]}$ is not contained in  \sett{t(\hgen^i}{i\in [d]}.
+ Then for any strategy of \adv playing the role of \prvpoly in the above protocol, the probability that
+ \verpoly accepts is \negl.
+\end{lemma}
+\begin{proof}
+ Using Claim \ref{clm:main_lookup} we know that when $f$'s range is not contained in $t$'s for any choice of $s$ sent by \prvpoly the polynomials $F(\beta,\gamma), G(\beta,\gamma)$ are different.
+ From the SZ lemma e.w.p \negl \verpoly chooses $\beta,\gamma$ such that $F(\beta,\gamma)\neq G(\beta,\gamma)$. In this case we have $Z(\hgen^{n+d})\neq 1$ which means \verpoly rejects.
+\end{proof}
+
 
 
 \end{document}
