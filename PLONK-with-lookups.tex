@@ -762,6 +762,10 @@ One advantage of this construction is that $Z(X)$ can be considered sparse - adj
 \\
 The final check we require, is that $Z(1) = 1$. This can be validated by validating that $(Z(X) - 1) L_1(X) = 0 \text{ mod } Z_H(X)$.
 
+\subsection{Initializing memory}
+
+We can use regular arithmetic gates to initialize values in set $A$ to circuit-specific constants (e.g. $0$).
+
 \subsection{Efficiency analysis}
 
 A RAM lookup will add $6$ extra witnesses into program memory, across $1.5$ rows. The lookup witnesses themselves require two values in program memory (the index and the value). The range check on $u$ will require one further witness in program memory. This brings the overall cost of a RAM access to $2.25$ PLONK gates.
