@@ -15,6 +15,7 @@
 \BOOKMARK [2][-]{subsection.8.3}{RAM consistency checks via range checks}{section.8}% 15
 \BOOKMARK [2][-]{subsection.8.4}{Assigning RAM sets to program memory}{section.8}% 16
 \BOOKMARK [2][-]{subsection.8.5}{Permutation argument to map A to B}{section.8}% 17
-\BOOKMARK [2][-]{subsection.8.6}{Initializing memory}{section.8}% 18
-\BOOKMARK [2][-]{subsection.8.7}{Efficiency analysis}{section.8}% 19
-\BOOKMARK [1][-]{section.9}{Scheme without masks}{}% 20
+\BOOKMARK [2][-]{subsection.8.6}{Transition constraints over set B}{section.8}% 18
+\BOOKMARK [2][-]{subsection.8.7}{Initializing memory}{section.8}% 19
+\BOOKMARK [2][-]{subsection.8.8}{Efficiency analysis}{section.8}% 20
+\BOOKMARK [1][-]{section.9}{Scheme without masks}{}% 21

@@ -762,6 +762,20 @@ One advantage of this construction is that $Z(X)$ can be considered sparse - adj
 \\
 The final check we require, is that $Z(1) = 1$. This can be validated by validating that $(Z(X) - 1) L_1(X) = 0 \text{ mod } Z_H(X)$.
 
+\subsection{Transition constraints over set $B$}
+
+To validate that index values in $B$ are monotonically increasing, we require an additional selector polynomial $Q_{ram3}$, and validate that:
+
+$$
+Q_{ram3}(X)\bigg((B(Xw) - B(X))^2 - (B(Xw) - B(X)) \bigg) = 0 \text{ mod } Z_H(X)
+$$
+
+To ensure $u$ contains the correct value, we validate that
+
+
+$$
+Q_{ram3}(X)\bigg(D(X) - (1 - B(Xw) + B(X)) \cdot (A(Xw) - A(X))\bigg) = 0 \text{ mod } Z_H(X)
+$$
 \subsection{Initializing memory}
 
 We can use regular arithmetic gates to initialize values in set $A$ to circuit-specific constants (e.g. $0$).
