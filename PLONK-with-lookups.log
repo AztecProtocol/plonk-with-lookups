@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7140 64-bit) (preloaded format=pdflatex 2019.4.5)  12 FEB 2020 14:52
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7140 64-bit) (preloaded format=pdflatex 2019.4.5)  29 FEB 2020 13:18
 entering extended mode
 **./PLONK-with-lookups.tex
 (PLONK-with-lookups.tex
@@ -1542,39 +1542,156 @@ Underfull \hbox (badness 10000) in paragraph at lines 629--633
 
  []
 
+
+Underfull \hbox (badness 10000) in paragraph at lines 637--641
+
+ []
+
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 643.
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/base\omscmr.fd"
+File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 643.
+
+
+Package hyperref Warning: Difference (2) between bookmark levels is greater 
+(hyperref)                than one, level fixed on input line 650.
+
 [7]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 634.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 634.
+Underfull \hbox (badness 10000) in paragraph at lines 665--669
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 672--676
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 677--684
+
+ []
+
+
+Overfull \hbox (18.20767pt too wide) in paragraph at lines 677--684
+\OT1/cmr/m/n/10.95 Where $\OML/cmm/m/it/10.95 []\OT1/cmr/m/n/10.95 (\OML/cmm/m
+/it/10.95 i\OT1/cmr/m/n/10.95 )$ is a prover-defined per-mu-ta-tion that maps i
+ndex-ordered in-dices into timestamp-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 677--684
+
+ []
+
+[8]
+Underfull \hbox (badness 10000) in paragraph at lines 697--701
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 710--717
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 710--717
+
+ []
+
+[9]
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 743.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 743.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 743.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 743.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 745--749
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 760--764
+
+ []
+
+[10] [11]
+Overfull \hbox (39.97446pt too wide) in paragraph at lines 828--830
+[]\OT1/cmr/m/n/10.95 Claim []9.1[] mo-ti-vates the fol-low-ing pro-to-col. Let 
+$\OML/cmm/m/it/10.95 H \OT1/cmr/m/n/10.95 = []$, $\OML/cmm/m/it/10.95 H[] \OT1/
+cmr/m/n/10.95 := [] \OML/cmm/m/it/10.95 ; H[] \OT1/cmr/m/n/10.95 :=
+ []
+
+
+Overfull \hbox (10.39673pt too wide) in paragraph at lines 840--842
+[]$[]$ \OT1/cmr/m/n/10.95 com-putes a poly-no-mial $\OML/cmm/m/it/10.95 Z \OMS/
+cmsy/m/n/10.95 2 \U/msb/m/n/10.95 F[]\OT1/cmr/m/n/10.95 [\OML/cmm/m/it/10.95 X\
+OT1/cmr/m/n/10.95 ]$ that ag-gre-gates the value $\OML/cmm/m/it/10.95 F\OT1/cmr
+/m/n/10.95 (\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 )\OML/cmm/m/it/10.95 =G\
+OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 )$
+ []
+
+
+Overfull \hbox (19.35344pt too wide) detected at line 844
+\OML/cmm/m/it/10.95 Z\OT1/cmr/m/n/10.95 (\OT1/cmr/bx/n/10.95 g[]\OT1/cmr/m/n/10
+.95 ) = [](\OML/cmm/m/it/10.95  \OT1/cmr/m/n/10.95 + \OML/cmm/m/it/10.95 f[]\O
+T1/cmr/m/n/10.95 ) \OMS/cmsy/m/n/10.95  []\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10
+.95 \OT1/cmr/m/n/10.95 (1 + \OML/cmm/m/it/10.95 \OT1/cmr/m/n/10.95 )\OML/cmm/
+m/it/10.95 t[] \OT1/cmr/m/n/10.95 + \OML/cmm/m/it/10.95 t[]\OT1/cmr/m/n/10.95 
+)\OML/cmm/m/it/10.95 = [] :
+ []
+
+[12] [13]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 869.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 869.
  (PLONK-with-lookups.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 634.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 634.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 869.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 869.
 Package rerunfilecheck Info: File `PLONK-with-lookups.out' has not changed.
-(rerunfilecheck)             Checksum: 8DB5EE6407AF556DCAB2C6C98BFFD403;683.
+(rerunfilecheck)             Checksum: D7614D926124FCD3A7C579327B65046F;1392.
  ) 
 Here is how much of TeX's memory you used:
- 43108 strings out of 492945
- 947715 string characters out of 3135514
- 1151655 words of memory out of 3000000
- 46339 multiletter control sequences out of 15000+200000
- 546337 words of font info for 78 fonts, out of 3000000 for 9000
+ 43174 strings out of 492945
+ 948549 string characters out of 3135514
+ 1152655 words of memory out of 3000000
+ 46368 multiletter control sequences out of 15000+200000
+ 547536 words of font info for 82 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  62i,12n,96p,809b,609s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Pr
 ogram Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program Fi
 les/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Program Files/MiKT
 eX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKTeX 2.9/f
-onts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type
-1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/
-amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/
-cm/cmr8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmss12.
-pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/
-Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Program F
-iles/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Program Files/MiK
-TeX 2.9/fonts/type1/public/amsfonts/cm/cmtt12.pfb><C:/Program Files/MiKTeX 2.9/
-fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on PLONK-with-lookups.pdf (7 pages, 179468 bytes).
+onts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Program Files/MiKTeX 2.9/fonts/typ
+e1/public/amsfonts/cm/cmmi6.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public
+/amsfonts/cm/cmmi8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts
+/cm/cmr10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12
+.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/P
+rogram Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmss10.pfb><C:/Program F
+iles/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmss12.pfb><C:/Program Files/MiK
+TeX 2.9/fonts/type1/public/amsfonts/cm/cmss8.pfb><C:/Program Files/MiKTeX 2.9/f
+onts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/typ
+e1/public/amsfonts/cm/cmsy6.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public
+/amsfonts/cm/cmsy8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts
+/cm/cmti10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmtt
+12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/symbols/msbm10.
+pfb>
+Output written on PLONK-with-lookups.pdf (13 pages, 261512 bytes).
 PDF statistics:
- 150 PDF objects out of 1000 (max. 8388607)
- 26 named destinations out of 1000 (max. 500000)
- 93 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 257 PDF objects out of 1000 (max. 8388607)
+ 58 named destinations out of 1000 (max. 500000)
+ 165 words of extra memory for PDF output out of 10000 (max. 10000000)
 

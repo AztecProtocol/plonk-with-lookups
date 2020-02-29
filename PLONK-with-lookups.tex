@@ -632,6 +632,140 @@ A Blake2s round consists of 4 of these, which is 16 gates and 16 table reads.
 The blake2s hash function requires 80 applications of this round function, which would be 1,280 gates and 1,280 table reads. The table reads would cost ~3,840 scalar multiplications, which is equivalent to ~350 native gates. So the total cost would be $\approx1,650$ 'gates'. Current best estimate with quaternary decomposition constraints is $\approx6,700$. R1CS requires $>20,000$.
 
 
+\section{RAM overview}
+
+The following describes a sub-protocol that emulates dynamic memory access within a PLONK circuit. Each RAM access has constant complexity and is updatable by the prover. The contrasts with the current PLONK memory model, which enables strict copy constraints between specific witnesses, that must be known at 'circuit construction time'.
+\\
+\\
+A RAM 'triple' consists of the following three witnesses:
+
+\begin{itemize}
+	\item An index $s \in F_p$
+	\item A value $v \in F_p$
+	\item A timestamp $t \in F_p$
+\end{itemize}
+
+Timestamp is 'when' in the execution trace a RAM lookup occurs (e.g. 1st lookup is $t_1 = 1$, 2nd is $t_2 = 2$ etc).
+
+\subsubsection{RAM memory access model}
+
+We model our RAM as write-after-read. That every RAM read is followed by a RAM write into the same index. %We will use permutation arguments to validate the correctness of RAM accesses - permutations enable bijective mappings between sets, therefore multiple RAM reads cannot refer to the same
+Under this model, we can enable dynamic RAM by performing a consistency check - that every when a value is written into a RAM index, the subsequent access into that index will return the same value.
+
+\subsection{RAM consistency checks via reduced permutations}
+
+We define three sets of RAM triples:
+
+\begin{itemize}
+	\item Set $A$: RAM triples sorted by timestamp
+	\item Set $B$: RAM triples sorted by index, with triples of the same index sorted by timestamp
+	\item Set $C$: the set of all RAM reads in program memory
+\end{itemize}
+
+Standard PLONK copy constraints are used to map between $A$ and $C$, as the locations of specific RAM accesses within a circuit are fixed.
+\\
+\\
+The verifier generates two random challenges $(\alpha, \beta) \in \F_p$, where for set elements $a_i \in A$:
+
+$$ a_i = t_{i} + \alpha \cdot s_{\sigma_t(i)} + \beta \cdot v_{\sigma_t(i)}$$
+
+Here, $\sigma_t(i)$ is a prover-defined permutation that maps timestamp-ordered indices into index-ordered indices.
+\\
+\\
+Similarly, for set elements $b_i \in B:$
+
+$$b_i = t_{\sigma_s(i)} + \alpha \cdot s_i + \beta \cdot v_i $$
+\\
+\\
+Where $\sigma_s(i)$ is a prover-defined permutation that maps index-ordered indices into timestamp-ordered indices.
+\\
+\\
+A reduced permutation argument can be used to map between sets $A$ and $B$. The verifier uses a grand-product argument to validate that
+
+$$
+\prod_{i=1}^n \frac{(a_i + \gamma)}{(b_i + \gamma)}
+$$
+
+\subsection{RAM consistency checks via copy constraints}
+
+In set $B$, the verifier can use regular transition constraints to validate that adjacent triples have monotonically increasing indices. Specifically
+
+$$
+(s_{i + 1} - s_i)^2 - (s_{i + 1} - s_i) = 0
+$$
+
+This requires every RAM entry has a read/write multiplicity of at least one. Dummy reads can be added into a circuit to enable this.
+\\
+\\
+A regular PLONK copy constraint can be used to validate that, for every pair of RAM triples, the index and value fields are identical.
+
+$$
+\forall j \in [1, \ldots, \frac{n}{2}]: s_{2*j} = s_{2 * j + 1} \quad , \quad v_{2 * j} = v_{2 * j + 1}
+$$
+
+The final consistency check is to ensure that, for elements in $B$ that share the same index, the timestamps are monotonically increasing. This validates that adjacent RAM accesses share identical values. i.e. every RAM read into a given index returns the previously written value.
+
+\subsection{RAM consistency checks via range checks}
+
+In set $B$, the set of witnesses $u = (t_{i + 1} - t_i) \cdot (1 - (s_{i + 1} - s_i))$ must fall within the range $0, \ldots, n$. Adjacent $s$ indices are monotonically increasing by $0$ or $1$. i.e. if $s_{i + 1} \ne s_i$, $u = 0$.
+\\
+\\
+If $s_{i + 1} = s_i$, $u = (t_{i + 1} - t_i)$. i.e. if $u >= 0$, adjacent timestamp fields are monotonically increasing. The reduced permutation check between $A$ and $B$ ensures that $u \ne 0$ when $s_{i + 1} = s_i$.
+\\
+\\
+We can use our range protocol to validate that $u \in [0, \ldots, n]$.
+
+\subsection{Assigning RAM sets to program memory}
+
+For width-4 PLONK, a single row of program memory can contain two elements of set $A$. This is because we can add an implicit timestamp via selector polynomials. Layout in program memory is as follows:
+
+$$
+\begin{array}{|c|c|c|c|}
+s_{\sigma_t(i)} & v_{\sigma_t(i)} & s_{\sigma_t(i + 1)} & v_{\sigma_t(i + 1)} \\
+\ldots & \ldots & \ldots & \ldots \\
+s_{\sigma_t(n-1)} & v_{\sigma_t(n - 1)} & s_{\sigma_t(n)} & v_{\sigma_t(n)} \\
+\end{array}
+$$
+
+Set $B$ requires timestamps as explicit values in program memory, with one RAM entry occupying an entire row. Layout is as follows:
+
+$$
+\begin{array}{|c|c|c|c|}
+t_{\sigma_s(i)} & s_i & v_i & --- \\
+t_{\sigma_s(i+1)} & s_{i+1} & v_{i+1} & (t_{\sigma_s(i+1)} - t_{\sigma_s(i)}) \cdot (s_{i+1} - s_{i}) \\
+\ldots & \ldots & \ldots & \ldots \\
+t_{\sigma_s(n)} & s_n & v_n & (t_{\sigma_s(n)} - t_{\sigma_s(n-1)}) \cdot (s_{n} - s_{n-1}) \\
+\end{array}
+$$
+
+Set $C$ will be dispersed across the remaining program memory cells. Strict copy constraints validate the mapping between $C$ and $A$, therefore set $C$ requires no explicit structure in program memory.
+
+\subsection{Permutation argument to map $A$ to $B$}
+
+To verify our reduced permutation argument, we need to selectively integrate a subset of all witnesses into a grand product argument. To this end, we defined two selector polynomials $Q_{ram1}(X), Q_{ram2}(X)$, that used to conditionally include product terms into a grand product argument.
+\\
+\\
+We include additional selector polynomials $Q_{t1}(X), Q_{t2}(X)$, that inject an implicit timestamp value into our timestamp-ordered set $A$. The permutation argument is as follows:
+
+$$
+\begin{array}{c}
+Z(Xw) \cdot \bigg(\begin{array}{c} Q_{ram1}(X)(Q_{t1}(X) + \alpha \cdot A(X) + \beta \cdot B(X) + \gamma)
+\\
+\cdot (Q_{t2}(X) + \alpha \cdot C(X) + \beta \cdot D(X))) + (1 - Q_{ram1}(X)) \end{array}\bigg)
+\\ = \\
+Z(X)\bigg(Q_{ram2}(X)(A(X) + \alpha \cdot B(X) + \beta \cdot C(X) + \gamma) + (1 - Q_{ram2}(X))\bigg) \text{ mod } Z_H(X)
+\end{array}
+$$
+
+One advantage of this construction is that $Z(X)$ can be considered sparse - adjacent elements do not change if a row of program memory is not a member of $A$ or $B$. When computed using a Lagrange-base preprocessed SRS, a commitment to $Z(X)$ can be computed with $n$ multi-exponentiations.
+\\
+\\
+The final check we require, is that $Z(1) = 1$. This can be validated by validating that $(Z(X) - 1) L_1(X) = 0 \text{ mod } Z_H(X)$.
+
+\subsection{Efficiency analysis}
+
+A RAM lookup will add $6$ extra witnesses into program memory, across $1.5$ rows. The lookup witnesses themselves require two values in program memory (the index and the value). The range check on $u$ will require one further witness in program memory. This brings the overall cost of a RAM access to $2.25$ PLONK gates.
+
 \section{Scheme without masks}
 
 
