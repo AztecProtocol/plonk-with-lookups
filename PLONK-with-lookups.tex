@@ -242,6 +242,7 @@
 %\num\newcommand{\crs2}{\ensuremath{\mathrm{\sigma}_2}\xspace}
 \newcommand{\set}[1]{\ensuremath{\left\{#1\right\}}\xspace}
 \newcommand{\hgen}{\ensuremath{\mathbf{g}}\xspace}
+\newcommand{\cosetgen}{\ensuremath{\mathbf{\kappa}}\xspace}
 \renewcommand{\sim}{\ensuremath{\mathsf{sim}}\xspace}%the distribution of messages when \advv simulates message of \p1
 \newcommand{\real}{\ensuremath{\mathsf{real}}\xspace}%the distribution of messages when \p1 is honest and \adv controls rest of players
  \newcommand{\koevec}[2]{\ensuremath{(1,#1,\ldots,#1^{#2},\alpha,\alpha #1,\ldots,\alpha #1^{#2})}\xspace}
@@ -632,7 +633,7 @@ A Blake2s round consists of 4 of these, which is 16 gates and 16 table reads.
 The blake2s hash function requires 80 applications of this round function, which would be 1,280 gates and 1,280 table reads. The table reads would cost ~3,840 scalar multiplications, which is equivalent to ~350 native gates. So the total cost would be $\approx1,650$ 'gates'. Current best estimate with quaternary decomposition constraints is $\approx6,700$. R1CS requires $>20,000$.
 
 
-\section{Scheme without masks}
+\section{Scheme without masks}\label{sec:mainscheme}
 
 
 \paragraph{Notation}
@@ -692,7 +693,9 @@ we have
  \end{proof}
  
  Claim \ref{clm:main_lookup} motivates the following protocol.
- Let $H=\set{\hgen,\ldots,\hgen^{n+d}}$, $H_1\defeq \set{\hgen,\ldots,\hgen^n}, H_2 \defeq \set{\hgen^{n+1},\ldots\hgen^{n+d}}$
+ Let $\dom=\set{\hgen,\ldots,\hgen^{n}}$ be a subset of a multiplicative subgroup of order $n+1$.
+ Let $\cosetgen$ be a generator of a coset of $H$.
+Assume for simplicity below that $d=n$. 
  \paragraph{Preprocessed polynomials:}
 The polynomial $t \in \polysofdeg{d}$  describing the lookup values .
 
@@ -706,14 +709,23 @@ The polynomial $t \in \polysofdeg{d}$  describing the lookup values .
  \item \prvpoly computes a polynomial $Z\in \polysofdeg{n+d}$ that aggregates the value $F(\beta,\gamma)/G(\beta,\gamma)$ where $F,G$ are as described above. Specifically, we let
 \begin{enumerate}
  \item  $Z(\hgen) = 1$,
-\item $Z(\hgen^i)=\prod_{1\leq j<i} (\gamma + f(\hgen^j))/(\gamma(1+\beta) + s(\hgen^j) + \beta s(\hgen^{j+1}))$, for $2\leq i \leq n+1$
-\item \[Z(\hgen^{n+i})= \prod_{j\in [n]} (\gamma + f_j)\cdot \prod_{1\leq j < i} (\gamma(1+\beta) t_j + \beta t_{j+1})/\left(\prod_{1\leq j < n+i} (\gamma(1+\beta) s_j + \beta s_{j+1})\right).\]
+\item For $2\leq i \leq n+1$, $Z(\hgen^i)=(1+\beta)^{i-1}\prod_{1\leq j<i} (\gamma + f(\hgen^j))/(\gamma(1+\beta) + s(\hgen^j) + \beta s(\hgen^{j+1}))$, 
+\item For $1\leq i \leq n+1$,
+\[Z(\cosetgen\cdot \hgen^{i})= \frac{(1+\beta)^n \prod_{j\in [n]} (\gamma + f_j)\cdot \prod_{1\leq j < i} (\gamma(1+\beta)+ t_j + \beta t_{j+1})}{\prod_{1\leq j < n+i} (\gamma(1+\beta)+ s_j + \beta s_{j+1})}.\]
  and
+%  \item $Z(\cosetgen \cdot \hgen^{d})=1$
 \end{enumerate}
  \item \prvpoly sends $Z$ to \ideal.
- \item \verpoly checks that $Z$ is of the form described similarly to the PLONK perm argument and
- that $Z(\hgen^{n+d})=1$.
- (TODO:write exact ver equations)
+ \item \verpoly checks that $Z$ is indeed of the form described above, and that $Z(\hgen^{n+d})=1$. More precisely, \verpoly checks the following identities on $H$.
+ \begin{enumerate}
+  \item $L_1(Z-1)\equiv 0$
+  \item $Z(X)(1+\beta)\cdot (\gamma + f(X)) \equiv  Z(X\cdot \hgen)(\gamma(1+\beta)+ s(X)+\beta s(X\cdot \hgen) )$.
+  \item $L_{n}(Z(X\cdot \hgen)-Z(\cosetgen\hgen X))\equiv 0$
+  \item $Z(\cosetgen\cdot  X)(\gamma(1+\beta)+ t(X)+\beta t(X\cdot \hgen) )=Z(\cosetgen\hgen \cdot  X)(\gamma(1+\beta)+ s(\cosetgen X)+\beta s(\cosetgen X\cdot \hgen) )$.
+  \item $L_{0}(Z(\cosetgen X)-1)\equiv 0$
+ 
+ \end{enumerate}
+
 %  \begin{enumerate}
 %   \item $L_1(a) (Z(a)-1) =0$.
 %   \item $Z(a)f'(a) = g'(a)Z(a\cdot \hgen)$.
@@ -730,8 +742,27 @@ The polynomial $t \in \polysofdeg{d}$  describing the lookup values .
  From the SZ lemma e.w.p \negl \verpoly chooses $\beta,\gamma$ such that $F(\beta,\gamma)\neq G(\beta,\gamma)$. In this case we have $Z(\hgen^{n+d})\neq 1$ which means \verpoly rejects.
 \end{proof}
 
+\section{Generalzing to vector lookups}
+Suppose we have several witness polynomials $f_1,\ldots,f_w \in \polysofdeg{n}$,
+and a table of values $t^*\in (\F^w)^d$.
+We wish to check that for each $i\in [n]$
+$(f_1(\hgen^i),\ldots,f_w(\hgen^i))\in t$.
+We can use randomization to efficiently reduce to the case of Section \ref{sec:mainscheme}.
+
+For each $i\in [w]$ we will include in the set of preprocessed polynomials $t_i \in \polysofdeg{d}$ with $t_i(\hgen^j) = t_{i,j}$ for each $j\in [d]$.
+
+The verifier will choose random $\alpha \in \F$.
+
+Then we will define $t\defeq \sum_{i\in [w]} \alpha^i t_i, f \defeq \sum_{i\in [w]} \alpha^i f_i$.
+
+Assume that for some $j\in [n]$ $(f_1(\hgen^j),\ldots,f_w(\hgen^j))\notin t^*$.
+Then e.w.p $w/|\F|$, $f(\hgen^j)\notin t$.
+Thus, after the selection of $\alpha$,
+we can run the protocol of the previous section on $f,t$.
 
 
+
+\section{A simplified solution for continuous ranges}
 \end{document}
 
 
