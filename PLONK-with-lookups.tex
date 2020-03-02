@@ -397,7 +397,7 @@ That is, suppose that the values in the look-up table are \sett{t_i}{i\in [d]} a
 \[F(X)\defeq \prod_{i\in [n]} (X-f_i), G(X)\defeq \prod_{i\in [d]}(X-t_i)\]
 have the same roots, ignoring multiplicites, i.e. that for non-negative integers \sett{e_i}{i\in [d]} we  have
 $F(X) = \prod_{i\in [d]} (X-t_i)^{e_i}$.
-Bootle et. al \cite{arya} gave an algorithm for this exact problem, also in the context of efficient SNARK arithmetization.
+Bootle et. al \cite{arya} gave an algorithm for this exact problem, also in the context of efficient SNARK arithmetization of a common operation (in their case, repeatedly checking that field elements correspond to certain convenient sparse representations of boolean strings).
 
 Their algorithm requires committing to a vector of length $d\log n$ that contains
 for each $i\in [d], j\in [\log n] $ the value $t_i^{2^j}$.
