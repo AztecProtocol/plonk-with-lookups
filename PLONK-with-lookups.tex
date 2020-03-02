@@ -638,13 +638,13 @@ The blake2s hash function requires 80 applications of this round function, which
 
 \paragraph{Notation}
 
-Fix integers $n,d$ and vectors $a\in \F^n, t\in\ F^d$.
-We will (ab)use the notation $a\subset t$ to mean $\sett{a_i}{i\in [n]}\subset \sett{t_i}{i\in [d]}$.
+Fix integers $n,d$ and vectors $f\in \F^n, t\in\F^d$.
+We will (ab)use the notation $f\subset t$ to mean $\sett{f_i}{i\in [n]}\subset \sett{t_i}{i\in [d]}$.
 
-When $a\subset t$ , we say that $a$ is \emph{sorted by $t$} to mean that values appear in the same order in $a$ as they do in $t$. Formally, for any $i<i'\in [n]$ such that $a_i\neq a_{i'}$, if $j,j'\in [d]$ are such that $t_{j} = a_i, t_{j'} =a_{i'}$ then $j<j'$.
+When $f\subset t$ , we say that $f$ is \emph{sorted by $t$} when values appear in the same order in $f$ as they do in $t$. Formally, for any $i<i'\in [n]$ such that $f_i\neq f_{i'}$, if $j,j'\in [d]$ are such that $t_{j} = f_i, t_{j'} =f_{i'}$ then $j<j'$.
 
-Now, given $t\in \F^d, a\in \F^n, s\in \F^{n+d}$, define bi-variate polynomials $F,G$ as 
-\[F(\beta,\gamma) \defeq (1+\beta)^n\cdot \prod_{i\in [n]} (\gamma + a_i) \prod_{i\in [d-1]} (\gamma(1+\beta) + t_i + \beta t_{i+1})\]
+Now, given $t\in \F^d, f\in \F^n, s\in \F^{n+d}$, define bi-variate polynomials $F,G$ as 
+\[F(\beta,\gamma) \defeq (1+\beta)^n\cdot \prod_{i\in [n]} (\gamma + f_i) \prod_{i\in [d-1]} (\gamma(1+\beta) + t_i + \beta t_{i+1})\]
                                   
 \[G(\beta,\gamma) \defeq \prod_{i\in [n+d-1]} \left( \gamma(1+\beta) + s_i + \beta s_{i+1} \right)\]
 we have
@@ -652,49 +652,55 @@ we have
 
  $F\equiv G$ if and only if 
  \begin{enumerate}
-  \item $a \subset t$, and 
-  \item $s$ is $(a,t)$ sorted by $t$. 
+  \item $f \subset t$, and 
+  \item $s$ is $(f,t)$ sorted by $t$. 
  \end{enumerate}
 
 \end{claim}
 \begin{proof}
- We first write $f,g$ as elements of $\F(\beta)[\gamma]$ while taking out a $(1+\beta)$ factor as follows.
-\[F(\beta,\gamma) = (1+\beta)^{n+d-1}\cdot \prod_{i\in [n]} (\gamma + a_i) \prod_{i\in [d-1]} \left(\gamma + (t_i + \beta t_{i+1})/(1+\beta)\right)\]
+ We write $F,G$ as elements of $\F(\beta)[\gamma]$ while taking out a $(1+\beta)$ factor as follows.
+\[F(\beta,\gamma) = (1+\beta)^{n+d-1}\cdot \prod_{i\in [n]} (\gamma + f_i) \prod_{i\in [d-1]} \left(\gamma + (t_i + \beta t_{i+1})/(1+\beta)\right)\]
                                   
 \[G(\beta,\gamma)  = (1+\beta)^{n+d-1} \prod_{i\in [n+d-1]} \left( \gamma+ (s_i + \beta s_{i+1})/(1+\beta) \right)\]
  
  
- Suppose that $a\subset t$ and $s\in \F^{n+d}$ is $(a,t)$ sorted by $t$.
+ Suppose first that $f\subset t$ and $s\in \F^{n+d}$ is $(f,t)$ sorted by $t$.
 
- Then for each $j\in [d-1]$, there is an index $i\in [n+d-1]$ where, such that
+ Then for each $j\in [d-1]$, there is an index $i\in [n+d-1]$ such that
  $ (t_j,t_{j+1})=(s_i,s_{i+1})$.
  The corresponding factors in $F,G$ are equal. That is,
- \[(\gamma + (t_i + \beta t_{i+1})/(1+\beta)) = (\gamma + (t_i + \beta t_{i+1})/(1+\beta))\]
+ \[(\gamma + (t_j + \beta t_{j+1})/(1+\beta)) \equiv (\gamma + (s_i + \beta s_{i+1})/(1+\beta))\]
+ 
+ Let $P'\subset [n+d-1]$ the set of these $d-1$ indices $i$
+ , and let $P\defeq [n+d-1]\setminus P'$.
+ The $n$ indices $i\in P$ are such 
+ that $s_i=s_{i+1}$, and $\sett{s_i}{i\in P}$ equals $\sett{f_i}{i\in [n]}$. For each $i\in P$, the corresponding factor of $G$, will be
+ \[ \gamma + (s_i + \beta s_{i+1})/(1+\beta)= \gamma + s_i,\]
+ which, for the $j$ such that $s_i =f_j$ will equal the factor $(\gamma + f_j)$ in $F$.
  
  
- 
- For the other direction, assume $F\equiv G$ as polynomials in $\F[\beta,\gamma]$
+ For the other direction, assume $F\equiv G$ as polynomials in $\F[\beta,\gamma]$.  
  Then $F\equiv G$ also as elements of $\F(\beta)[\gamma]$.
  Since $\F(\beta)[\gamma]$ is a unique factorization domain, we know that the linear factors of $F,G$, as written above must be equal.
  Thus, for each $i\in [d-1]$, $G$ must have a factor equal to $(\gamma + (t_i + \beta t_{i+1})/(1+\beta))$.
  In other words, for some $j\in [n+d-1]$, 
  \[\gamma + (t_i + \beta t_{i+1})/(1+\beta)= \gamma+ (s_j + \beta s_{j+1})/(1+\beta),\]
  which implies $t_i + \beta t_{i+1}= s_j + \beta s_{j+1}$, and therefore $t_i= s_j, t_{i+1}=s_{j+1}$.
- Call $P\subset [n+d-1]$ the set of these $d-1$ indices $j$.
- For any other index $j\in [n+d-1]\setminus P$, there must be a factor ``coming from $a$'' in $F$ that equals the corresponding factor in $G$. More precisely, for such $j$ there exists $i\in [n]$ such that
- \[\gamma + a_i = \gamma+ (s_j + \beta s_{j+1})/(1+\beta),\]
+Call $P'\subset [n+d-1]$ the set of these $d-1$ indices $j$.
+ For any index $j\in [n+d-1]\setminus P'$, there must be a factor ``coming from $f$'' in $F$ that equals the corresponding factor in $G$. More precisely, for such $j$ there exists $i\in [n]$ such that
+ \[\gamma + f_i = \gamma+ (s_j + \beta s_{j+1})/(1+\beta),\]
  or equivalently
- \[a_i+ \beta a_i = s_j + \beta s_{j+1}\]
+ \[f_i+ \beta f_i = s_j + \beta s_{j+1}\]
  which implies
- $a_i= s_j=s_{j+1}$.
+ $f_i= s_j=s_{j+1}$.
  
- Thus, we know that whenever consecutive values in $s$ are different, they are exactly equal to two consecutive values in $t$, and all values of $a$ are values of $t$.
+ Thus, we know that whenever consecutive values in $s$ are different, they are exactly equal to two consecutive values in $t$, and all values of $f$ are values of $t$.
  
  \end{proof}
  
  Claim \ref{clm:main_lookup} motivates the following protocol.
  Let $\dom=\set{\hgen,\ldots,\hgen^{n}}$ be a subset of a multiplicative subgroup of order $n+1$.
- Let $\cosetgen$ be a generator of a coset of $H$.
+ Let $\cosetgen$ be an element of a coset of $H$.
 Assume for simplicity below that $d=n$. 
  \paragraph{Preprocessed polynomials:}
 The polynomial $t \in \polysofdeg{d}$  describing the lookup values .
@@ -742,11 +748,11 @@ The polynomial $t \in \polysofdeg{d}$  describing the lookup values .
  From the SZ lemma e.w.p \negl \verpoly chooses $\beta,\gamma$ such that $F(\beta,\gamma)\neq G(\beta,\gamma)$. In this case we have $Z(\hgen^{n+d})\neq 1$ which means \verpoly rejects.
 \end{proof}
 
-\section{Generalzing to vector lookups}
+\section{Generalizing to vector lookups and multiple tables}
 Suppose we have several witness polynomials $f_1,\ldots,f_w \in \polysofdeg{n}$,
 and a table of values $t^*\in (\F^w)^d$.
-We wish to check that for each $i\in [n]$
-$(f_1(\hgen^i),\ldots,f_w(\hgen^i))\in t$.
+We wish to check that for each $j\in [n]$
+$(f_1(\hgen^j),\ldots,f_w(\hgen^j))\in t^*$.
 We can use randomization to efficiently reduce to the case of Section \ref{sec:mainscheme}.
 
 For each $i\in [w]$ we will include in the set of preprocessed polynomials $t_i \in \polysofdeg{d}$ with $t_i(\hgen^j) = t_{i,j}$ for each $j\in [d]$.
@@ -755,12 +761,15 @@ The verifier will choose random $\alpha \in \F$.
 
 Then we will define $t\defeq \sum_{i\in [w]} \alpha^i t_i, f \defeq \sum_{i\in [w]} \alpha^i f_i$.
 
-Assume that for some $j\in [n]$ $(f_1(\hgen^j),\ldots,f_w(\hgen^j))\notin t^*$.
-Then e.w.p $w/|\F|$, $f(\hgen^j)\notin t$.
+Assume that for some $j\in [n]$, $(f_1(\hgen^j),\ldots,f_w(\hgen^j))\notin t^*$.
+Then e.w.p $d\cdot w/|\F|$, $f(\hgen^j)\notin t$.
 Thus, after the selection of $\alpha$,
 we can run the protocol of the previous section on $f,t$.
 
 
+\subsection{multiple tables}
+Suppose further that we have in fact have multiple tables $t^*_1,\ldots, t^*_\ell$
+and for each $i\in [n]$ wish to check that for some predefined $j\in [\ell]$,
 
 \section{A simplified solution for continuous ranges}
 \end{document}
