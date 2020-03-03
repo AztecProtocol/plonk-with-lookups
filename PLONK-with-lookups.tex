@@ -261,6 +261,7 @@
 \newcommand{\elempowrs}[1]{\ensuremath{\mathsf{e}_{#1}}\xspace}
  \newcommand{\secrets}{\ensuremath{\mathsf{secrets}}\xspace}
  \newcommand{\polysofdeg}[1]{\ensuremath{\F_{< #1}[X]}\xspace}
+ \newcommand{\polyss}{\ensuremath{\F[X]}\xspace}
  \newcommand{\bivar}[1]{\ensuremath{\F_{< #1}[X,Y]}\xspace}
  \newcommand{\sig}{\ensuremath{\mathscr{S}}\xspace}
  \newcommand{\prot}{\ensuremath{\mathscr{P}}\xspace}
@@ -404,38 +405,38 @@ for each $i\in [d], j\in [\log n] $ the value $t_i^{2^j}$.
 They also commit to the binary decomposition of the \set{e_i},
 and using the two, prove that $F$ is of the desired form.
 
-We present here an arguably simpler protocol for the same problem, that doesn't require explicitly representing the multiplicities.
+We present here an arguably simpler protocol for the same problem, that doesn't require explicitly representing the multiplicities. Let us use the notation
+$f\subset t$ as shorthand for $\sett{f_i}{i\in [n]}\subset \sett{t_i}{i\in [d]}$.
+
 The idea is to look at a sorted version \set{s_i} of the values \set{f_i},
 and compare the set of non-zero \emph{differences} in \set{s_i}
 and \set{t_i}. Note that if $f\subset t$ we indeed have that these sets of differences are the same. However, the converse is not true: We can create a sequence of values \set{s_i}
 having the same difference set as \set{t_i}, but with the differences appearing in \emph{different order}; and in this case we won't have $s\subset t$.
 As an illustarting example, take
 \[t=\set{1,4,8}, s = \set{1,1,4,8,8,8}, s' = \set{1,5,5,5,8,8}\]
-All three sets have the same difference set \set{3,4}; bit since those differences appear in different order in $s'$ and $t$, we don't have $s\subset t$. We also didn't address checking the starting point is the same in $s$ and $t$.
+All three sets have the same difference set \set{3,4}; but since those differences appear in different order in $s'$ and $t$, we don't have $s'\subset t$. We also didn't address checking the starting point is the same in $s$ and $t$.
 Both these issues can be solved by comparing \emph{randomized} difference sets:
 We choose random $\beta \in \F$, and compare the non-zero elements in the sequences 
 \sett{t_i+\beta t_{i+1}}{i\in [d-1]}, \sett{s_i +\beta s_{i+1}}{i\in [n-1]}
 
-We show that this check can be done efficiently using a ``grand product argument'' similar to the one in \cite{plonk}.
+We show that this check can be done efficiently using a ``grand product argument'' similar to the one used in \cite{plonk}'s permutation argument.
 A techinicality, is that it is more convenient to assume \emph{all} of $t$'s values 
 appeat at least once in $f$. Which is why we in fact take $s$ to be the sorted version of the concatenation of $f$ and $t$.
 
 
 Precise details follow in the next section.
 
-\section{Introduction}
 
-
-
-
-
-\section{Scheme without masks}\label{sec:mainscheme}
+\section{The main scheme}\label{sec:mainscheme}
 
 
 \paragraph{Notation}
 
 Fix integers $n,d$ and vectors $f\in \F^n, t\in\F^d$.
-We will (ab)use the notation $f\subset t$ to mean $\sett{f_i}{i\in [n]}\subset \sett{t_i}{i\in [d]}$.
+We will (ab)use the notation $f\subset t$ to mean $\sett{f_i}{i\in [n]}\subset \sett{t_i}{i\in [d]}$. Let $\dom=\set{\hgen,\ldots,\hgen^{n}}$ be a subset of a multiplicative subgroup of order $n+1$.  Denote by $\cosetgen$ be an element of a non-trivial coset of $H$ in $\F^*$.
+For a polynomial $f\in \polyss$ and $i\in [n+1]$ we sometimes denote $f_i\defeq f(\hgen^i)$.
+For a vector $f\in \F^n$, we also denote by $f$ the polynomial in \polysofdeg{n} with $f(\hgen^i) =f_i$.
+
 
 When $f\subset t$ , we say that $f$ is \emph{sorted by $t$} when values appear in the same order in $f$ as they do in $t$. Formally, for any $i<i'\in [n]$ such that $f_i\neq f_{i'}$, if $j,j'\in [d]$ are such that $t_{j} = f_i, t_{j'} =f_{i'}$ then $j<j'$.
 
@@ -466,7 +467,7 @@ we have
  $ (t_j,t_{j+1})=(s_i,s_{i+1})$.
  The corresponding factors in $F,G$ are equal. That is,
  \[(\gamma + (t_j + \beta t_{j+1})/(1+\beta)) \equiv (\gamma + (s_i + \beta s_{i+1})/(1+\beta))\]
- 
+
  Let $P'\subset [n+d-1]$ the set of these $d-1$ indices $i$
  , and let $P\defeq [n+d-1]\setminus P'$.
  The $n$ indices $i\in P$ are such 
@@ -494,37 +495,40 @@ Call $P'\subset [n+d-1]$ the set of these $d-1$ indices $j$.
  
  \end{proof}
  
- Claim \ref{clm:main_lookup} motivates the following protocol.
- Let $\dom=\set{\hgen,\ldots,\hgen^{n}}$ be a subset of a multiplicative subgroup of order $n+1$.
- Let $\cosetgen$ be an element of a coset of $H$.
-Assume for simplicity below that $d=n$. 
+ Claim \ref{clm:main_lookup} motivates the following protocol. We use the ranged polynomial protocol terminology from \cite{plonk} to describe it.
+ 
+It will be conveient to assume $d=n+1$. (If $d\leq n$ pad $t$ with $n-d+1$ repetitions of the last element.)
  \paragraph{Preprocessed polynomials:}
-The polynomial $t \in \polysofdeg{d}$  describing the lookup values .
+The polynomial $t \in \polysofdeg{n}$  describing the lookup values.
 
 
 \paragraph{Inputs: $f\in \polysofdeg{n}$}
 \paragraph{Protocol:}
 \begin{enumerate}
- \item \prvpoly computes a polynomial $s\in \polysofdeg{n+d}$ that, identifying polynomials with vectors in $\F^{n+d}$ according to their values on $H$, is $(f,t)$ sorted by $t$.
- \item \prvpoly sends $s$ to \ideal.
+ \item Let $s\in \F^{2n+1}$ be the vector that is $(f,t)$ sorted by $t$. Also denote by $s$
+ the following polynomial in $\polysofdeg{2n+2}$ that represents $s$ on $\dom \cup \cosetgen \dom$:
+$s(\hgen^i) = s_i$ for $i\in [n+1]$; and $s(\cosetgen\hgen ^i)= s_{n+i}$ for each $i\in [n+1]$.
+ 
+ \item \prvpoly computes the polynomial $s$ and sends it to \ideal.
  \item \verpoly chooses random $\beta,\gamma \in \F$ and sends them to \prvpoly.
  \item \prvpoly computes a polynomial $Z\in \polysofdeg{n+d}$ that aggregates the value $F(\beta,\gamma)/G(\beta,\gamma)$ where $F,G$ are as described above. Specifically, we let
 \begin{enumerate}
  \item  $Z(\hgen) = 1$,
-\item For $2\leq i \leq n+1$, $Z(\hgen^i)=(1+\beta)^{i-1}\prod_{1\leq j<i} (\gamma + f(\hgen^j))/(\gamma(1+\beta) + s(\hgen^j) + \beta s(\hgen^{j+1}))$, 
-\item For $1\leq i \leq n+1$,
-\[Z(\cosetgen\cdot \hgen^{i})= \frac{(1+\beta)^n \prod_{j\in [n]} (\gamma + f_j)\cdot \prod_{1\leq j < i} (\gamma(1+\beta)+ t_j + \beta t_{j+1})}{\prod_{1\leq j < n+i} (\gamma(1+\beta)+ s_j + \beta s_{j+1})}.\]
+\item For $2\leq i \leq n$
+% \[Z(\hgen^i)=(1+\beta)^{i-1}\prod_{1\leq j<i} (\gamma + f(\hgen^j))/(\gamma(1+\beta) + s(\hgen^j) + \beta s(\hgen^{j+1})),\] 
+% \item For $1\leq i \leq n+1$,
+\[Z(\hgen^{i})= \frac{(1+\beta)^n \prod_{j < i} (\gamma + f_j)\cdot \prod_{1\leq j < i} (\gamma(1+\beta)+ t_j + \beta t_{j+1})}{\prod_{1\leq j <i} (\gamma(1+\beta)+ s_j + \beta s_{j+1})(\gamma(1+\beta)+ s_{n+j} + \beta s_{j+1})},\]
  and
-%  \item $Z(\cosetgen \cdot \hgen^{d})=1$
+\item $Z(\hgen^{n+1})=1$.
 \end{enumerate}
  \item \prvpoly sends $Z$ to \ideal.
  \item \verpoly checks that $Z$ is indeed of the form described above, and that $Z(\hgen^{n+d})=1$. More precisely, \verpoly checks the following identities on $H$.
  \begin{enumerate}
   \item $L_1(Z-1)\equiv 0$
-  \item $Z(X)(1+\beta)\cdot (\gamma + f(X)) \equiv  Z(X\cdot \hgen)(\gamma(1+\beta)+ s(X)+\beta s(X\cdot \hgen) )$.
-  \item $L_{n}(Z(X\cdot \hgen)-Z(\cosetgen\hgen X))\equiv 0$
-  \item $Z(\cosetgen\cdot  X)(\gamma(1+\beta)+ t(X)+\beta t(X\cdot \hgen) )=Z(\cosetgen\hgen \cdot  X)(\gamma(1+\beta)+ s(\cosetgen X)+\beta s(\cosetgen X\cdot \hgen) )$.
-  \item $L_{0}(Z(\cosetgen X)-1)\equiv 0$
+  \item $Z(X)(1+\beta)\cdot (\gamma + f(X))(\gamma(1+\beta)+ t(X)+\beta t(X\cdot \hgen) ) \equiv  Z(X\cdot \hgen)(\gamma(1+\beta)+ s(X)+\beta s(X\cdot \hgen))(\gamma(1+\beta)+ s(\cosetgen \cdot X)+\beta s(\cosetgen \cdot X\cdot \hgen))$.
+  \item $L_{1}(s(\cosetgen X\cdot \hgen)-s(X/\hgen))\equiv 0$
+%   \item $Z(\cosetgen\cdot  X)(\gamma(1+\beta)+ t(X)+\beta t(X\cdot \hgen) )=Z(\cosetgen\hgen \cdot  X)(\gamma(1+\beta)+ s(\cosetgen X)+\beta s(\cosetgen X\cdot \hgen) )$.
+  \item $L_{n}(Z(X\cdot \hgen)-1)\equiv 0$
  
  \end{enumerate}
 
