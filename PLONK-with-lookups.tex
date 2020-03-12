@@ -656,7 +656,7 @@ We could use our above protocol while setting $t_i = i-1$ for $i\in [d]$.
 By using $d=n+1$, the above protocol allowes us to check $f\subset \set{0,\ldots,n}$ with complexity $\aggdeg{\prot}=5n+4$ as stated in Lemma \ref{lem:lookupprot}. 
 We present an alternative protocol with the same complexity that will allow us to check $f\subset \set{0,\ldots,2n-2}$.
 %almost exactly the same complexity ($5n+5$ instead of $5n+4$).
-In fact, the protocol naturally generalizes for ranges $\set{0,\ldots,c(n-1)}$ while only increase the degree of verifier constraints. Thus, one may choose a larger $c$ in protocols where the range proof is a subroutine, according to the maximal constraint degree in other parts of the protocol.
+In fact, the protocol naturally generalizes for ranges $\set{0,\ldots,c(n-1)}$ while only increasing the degree of verifier constraints. Thus, one may choose a larger $c$ in protocols where the range proof is a subroutine, according to the maximal constraint degree in other parts of the protocol.
 
 
 The idea is the following. We emphasize we are assuming the range is in fact contained in \F, i.e. $cn < |\F|$.
@@ -759,7 +759,8 @@ Since $\gamma \in \F$ is chosen uniformly it follows that \verpoly accepts with 
  \end{proof}
 
 
-
+\section*{Acknowledgements} 
+We thank Jens Groth for introducing us to the look up protocol of \cite{arya}.
 
 % 
 % Let us measure the cost of this in terms of auxiliary polynomials given.
