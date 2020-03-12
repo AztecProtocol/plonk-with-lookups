@@ -82,7 +82,7 @@
 \newcommand{\bsigma}{\boldsymbol{\sigma}}
 %%% the "real" document content comes below...
 %\newcommand{\papertitle}{$\mathsf{Maitreya}$: Improved Prover Efficiency in Fully Succinct Universal zk-SNARKs through Permutation Arguments for Multiplicative Subgroups}
-\newcommand{\papertitle}{$\mathbf{PLONK}$ with lookups}
+\newcommand{\papertitle}{A simplified polynomial protocol for look-up tables}
 %\newcommand{\authorname}}
 \newcommand{\company}{}
 \title{ \bf \papertitle \\[0.72cm]}
@@ -243,7 +243,7 @@
 \newcommand{\set}[1]{\ensuremath{\left\{#1\right\}}\xspace}
 \newcommand{\hgen}{\ensuremath{\mathbf{g}}\xspace}
 \newcommand{\cosetgen}{\ensuremath{\mathbf{\kappa}}\xspace}
-\renewcommand{\sim}{\ensuremath{\mathsf{sim}}\xspace}%the distribution of messages when \advv simulates message of \p1
+% \renewcommand{\sim}{\ensuremath{\mathsf{sim}}\xspace}%the distribution of messages when \advv simulates message of \p1
 \newcommand{\real}{\ensuremath{\mathsf{real}}\xspace}%the distribution of messages when \p1 is honest and \adv controls rest of players
  \newcommand{\koevec}[2]{\ensuremath{(1,#1,\ldots,#1^{#2},\alpha,\alpha #1,\ldots,\alpha #1^{#2})}\xspace}
 \newcommand{\mida}{\ensuremath{A_{\mathrm{mid}}}\xspace}
@@ -282,6 +282,7 @@
 \newcommand{\obgen}{\ensuremath{\mathcal O}\xspace}
 \newcommand{\PC}{\ensuremath{\mathscr{P}}\xspace}
 \newcommand{\permscheme}{\ensuremath{\sigma_\mathscr{P}}\xspace}
+\newcommand{\aggdeg}[1]{\ensuremath{\mathfrak{d}(#1)}\xspace}
 
 	
 \newcommand{\selleft}{\ensuremath{\mathbf{q_L}}\xspace}
@@ -384,17 +385,22 @@
     \maketitle
 
     
-%     \begin{abstract}
-%      We present a simple protocol for checking the values comitted polynomial $f\in \polysofdeg{n}$ are contained in the values of a different comitted polynomial $t\in \polysofdeg{d}$. Our protocol can be viewed as a simplification of one from Bootle et. al \cite{arya} for a similar problem.
-%     \end{abstract}
+    \begin{abstract}
+     We present a protocol for checking the values of a comitted polynomial $f\in \polysofdeg{n}$ over a multiplicative subgroup $H\subset \F$ of size $n$, are contained in the values of a different comitted polynomial $t\in \polysofdeg{d}$ over the same subgroup $H$. Our protocol can be viewed as a simplification of one from Bootle et. al \cite{arya} for a similar problem, with potential efficiency improvements. In particular, \cite{arya}'s protocol requires comitting to several auxiliary polynomials of degree $d\cdot \log n$, whereas ours requires only one commitment to a single auxiliary polynomial of degree $d+n$, which is much smaller in the case $d\sim n$.
+     
+     One common use case of this primitive in the zk-SNARK setting is a ``batched range proof'', where one wishes to check all of $f$'s values on $H$ are in a range $[0,\ldots,M-1]$. We present a slightly optimized protocol for this special case, and pose improving it as an open problem.
+    \end{abstract}
 
 
 \section{Introduction}
-In many cases, SNARK circuit size is dominated by repeated operations, e.g. bitwise XOR or AND.
-We investigate an alternative approach, where for commonly used operations we precompute a look-up table of the legitimate (input, output) combinations.
+When wanting to use zk-SNARKs to prove statements involving standard primitives like AES-128 or SHA-256, one runs into the problem that the operations involved in these primitives are ``SNARK unfriendly'', in the sense of having large representations in the native SNARK language, which typically corresponds to low degree equations over a large prime field.
+Examples of operations with large overhead, are ones involving bit decomposition like bitwise XOR or AND. This has lead to extensive research into STARK and SNARK friendly hash functions that are based solely on native field operations.
+
+
+We investigate an alternative approach, where for commonly used operations we precompute a look-up table of the legitimate (input, output) combinations; and the prover argues the witness values exist in this table.
 
 In polynomial language, this ultimately boils down to proving polynomials are the same ``up to multiplicities''.
-That is, suppose that the values in the look-up table are \sett{t_i}{i\in [d]} and the values in the witness are \sett{f_i}{i\in [n]}. We show that the polynomials
+That is, suppose that the values in the look-up table are \sett{t_i}{i\in [d]} and the values in the witness are \sett{f_i}{i\in [n]}. We want to show that the polynomials
 \[F(X)\defeq \prod_{i\in [n]} (X-f_i), G(X)\defeq \prod_{i\in [d]}(X-t_i)\]
 have the same roots, ignoring multiplicites, i.e. that for non-negative integers \sett{e_i}{i\in [d]} we  have
 $F(X) = \prod_{i\in [d]} (X-t_i)^{e_i}$.
@@ -410,30 +416,47 @@ $f\subset t$ as shorthand for $\sett{f_i}{i\in [n]}\subset \sett{t_i}{i\in [d]}$
 
 The idea is to look at a sorted version \set{s_i} of the values \set{f_i},
 and compare the set of non-zero \emph{differences} in \set{s_i}
-and \set{t_i}. Note that if $f\subset t$ we indeed have that these sets of differences are the same. However, the converse is not true: We can create a sequence of values \set{s_i}
+and \set{t_i}. Note that if $f\subset t$, and every element of $t$ appears at least once in $f$, we indeed have that these sets of differences are the same. However, the converse is not true: We can create a sequence of values \set{s_i}
 having the same difference set as \set{t_i}, but with the differences appearing in \emph{different order}; and in this case we won't have $s\subset t$.
-As an illustarting example, take
+As an illustrating example, take
 \[t=\set{1,4,8}, s = \set{1,1,4,8,8,8}, s' = \set{1,5,5,5,8,8}\]
 All three sets have the same difference set \set{3,4}; but since those differences appear in different order in $s'$ and $t$, we don't have $s'\subset t$. We also didn't address checking the starting point is the same in $s$ and $t$.
 Both these issues can be solved by comparing \emph{randomized} difference sets:
-We choose random $\beta \in \F$, and compare the non-zero elements in the sequences 
-\sett{t_i+\beta t_{i+1}}{i\in [d-1]}, \sett{s_i +\beta s_{i+1}}{i\in [n-1]}
+We choose random $\beta \in \F$, and compare the elements in the sequences 
+\sett{t_i+\beta t_{i+1}}{i\in [d-1]}, \sett{s_i +\beta s_{i+1}}{i\in [n-1]}.
 
-We show that this check can be done efficiently using a ``grand product argument'' similar to the one used in \cite{plonk}'s permutation argument.
-A techinicality, is that it is more convenient to assume \emph{all} of $t$'s values 
-appeat at least once in $f$. Which is why we in fact take $s$ to be the sorted version of the concatenation of $f$ and $t$.
+Seemingly, we have taken ``one step forward and one back'' by adding the random $\beta$, as now pairs $(s_i,s_{i+1})$ with $s_i=s_{i+1}$ will give a non-zero contribution $s_i+\beta \cdot s_{i+1} = (1+\beta)\cdot s_i$. However, all elements corresponding to a repetition are now multiples of $(1+\beta)$ and we are able to use this to ``identify'' them and not use them in the comparison with the table.
+Specifically, we show that this check can be done correctly and efficiently using a ``grand product argument'' similar to the one used in \cite{plonk}'s permutation argument.
 
 
-Precise details follow in the next section.
+A technicality is that as mentioned this approach assumes all of $t$'s values appear at least once in $f$; which is one reason we in fact take $s$ to be the sorted version of the \emph{concatenation} of $f$ and $t$. This ends up also helping to batch both checks into one product: The check that $f\subset s$, and the check that $s\subset t$.
 
+
+Precise details of the scheme are given in Section \ref{sec:mainscheme}.
+
+\section{Preliminaries}
+\paragraph{Polynomial Protocols}
+We use the ranged polynomial protocol terminology from \cite{plonk} to describe our protocols.
+Here a prover sends polynomials of a certain degree bound $d$,
+and at the end of protocol, the verifier can ask whether certain identities hold between the polynomials sent during the protocol, the input polynomials, and the preprocessed polynomials, on a predefined set $H$.
+It is shown in \cite{plonk} how such a protocol can be compiled into one in the algebraic group model using the polynomial commitment scheme of \cite{kate}.
+
+
+For such a protocol \prot, let $\aggdeg{\prot}$ be the maximum over $s_1,\ldots,s_t$ sent by an honest prover during protocol execution of the sum of the degrees of the $s_i$ plus the maximal degree of the verifier identity when plugging in $s_1,\ldots,s_t$ into the verifier identity minus the size of $H$.
+
+The prover complexity ends up being closely tied to \aggdeg{\prot} as this corresponds to the number of group operations to commit to all polynomials (including the quotient polynomial that comes up in translating a ranged polynomial protocol to a polynomial protocol) using \cite{kate}. We will thus attempt to minimize \aggdeg{\prot} in our protocols.
+
+
+We refer the reader to Section 4 of \cite{plonk} for more details.
+ 
 
 \section{The main scheme}\label{sec:mainscheme}
 
 
-\paragraph{Notation}
+\paragraph{Notation:}
 
 Fix integers $n,d$ and vectors $f\in \F^n, t\in\F^d$.
-We will (ab)use the notation $f\subset t$ to mean $\sett{f_i}{i\in [n]}\subset \sett{t_i}{i\in [d]}$. Let $\dom=\set{\hgen,\ldots,\hgen^{n}}$ be a subset of a multiplicative subgroup of order $n+1$.  Denote by $\cosetgen$ be an element of a non-trivial coset of $H$ in $\F^*$.
+We use the notation $f\subset t$ to mean $\sett{f_i}{i\in [n]}\subset \sett{t_i}{i\in [d]}$. Let $\dom=\set{\hgen,\ldots,\hgen^{n+1}=1}$ be a multiplicative subgroup of order $n+1$ in \F.  Denote by $\cosetgen$ be an element of a non-trivial coset of $H$ in $\F^*$.
 For a polynomial $f\in \polyss$ and $i\in [n+1]$ we sometimes denote $f_i\defeq f(\hgen^i)$.
 For a vector $f\in \F^n$, we also denote by $f$ the polynomial in \polysofdeg{n} with $f(\hgen^i) =f_i$.
 
@@ -495,9 +518,8 @@ Call $P'\subset [n+d-1]$ the set of these $d-1$ indices $j$.
  
  \end{proof}
  
- Claim \ref{clm:main_lookup} motivates the following protocol. We use the ranged polynomial protocol terminology from \cite{plonk} to describe it.
- 
-It will be conveient to assume $d=n+1$. (If $d\leq n$ pad $t$ with $n-d+1$ repetitions of the last element.)
+ Claim \ref{clm:main_lookup} motivates the following protocol. 
+It will be convenient to assume $d=n+1$. (If $d\leq n$ pad $t$ with $n-d+1$ repetitions of the last element.)
  \paragraph{Preprocessed polynomials:}
 The polynomial $t \in \polysofdeg{n}$  describing the lookup values.
 
@@ -511,7 +533,7 @@ $s(\hgen^i) = s_i$ for $i\in [n+1]$; and $s(\cosetgen\hgen ^i)= s_{n+i}$ for eac
  
  \item \prvpoly computes the polynomial $s$ and sends it to \ideal.
  \item \verpoly chooses random $\beta,\gamma \in \F$ and sends them to \prvpoly.
- \item \prvpoly computes a polynomial $Z\in \polysofdeg{n+d}$ that aggregates the value $F(\beta,\gamma)/G(\beta,\gamma)$ where $F,G$ are as described above. Specifically, we let
+ \item \prvpoly computes a polynomial $Z\in \polysofdeg{n+1}$ that aggregates the value $F(\beta,\gamma)/G(\beta,\gamma)$ where $F,G$ are as described above. Specifically, we let
 \begin{enumerate}
  \item  $Z(\hgen) = 1$,
 \item For $2\leq i \leq n$
@@ -525,10 +547,12 @@ $s(\hgen^i) = s_i$ for $i\in [n+1]$; and $s(\cosetgen\hgen ^i)= s_{n+i}$ for eac
  \item \verpoly checks that $Z$ is indeed of the form described above, and that $Z(\hgen^{n+d})=1$. More precisely, \verpoly checks the following identities on $H$.
  \begin{enumerate}
   \item $L_1(Z-1)\equiv 0$
-  \item $Z(X)(1+\beta)\cdot (\gamma + f(X))(\gamma(1+\beta)+ t(X)+\beta t(X\cdot \hgen) ) \equiv  Z(X\cdot \hgen)(\gamma(1+\beta)+ s(X)+\beta s(X\cdot \hgen))(\gamma(1+\beta)+ s(\cosetgen \cdot X)+\beta s(\cosetgen \cdot X\cdot \hgen))$.
-  \item $L_{1}(s(\cosetgen X\cdot \hgen)-s(X/\hgen))\equiv 0$
+  \item 
+  \[(X-\hgen^{n+1})Z(X)(1+\beta)\cdot (\gamma + f(X))(\gamma(1+\beta)+ t(X)+\beta t(X\cdot \hgen) )\]
+  \[\equiv (X-\hgen^{n+1}) Z(X\cdot \hgen)(\gamma(1+\beta)+ s(X)+\beta s(X\cdot \hgen))(\gamma(1+\beta)+ s(\cosetgen \cdot X)+\beta s(\cosetgen \cdot X\cdot \hgen)).\]
+  \item $L_{n+1}(s(X)-s(\cosetgen X \hgen))\equiv 0$
 %   \item $Z(\cosetgen\cdot  X)(\gamma(1+\beta)+ t(X)+\beta t(X\cdot \hgen) )=Z(\cosetgen\hgen \cdot  X)(\gamma(1+\beta)+ s(\cosetgen X)+\beta s(\cosetgen X\cdot \hgen) )$.
-  \item $L_{n}(Z(X\cdot \hgen)-1)\equiv 0$
+  \item $L_{n+1}(Z(X)-1)\equiv 0$
  
  \end{enumerate}
 
@@ -550,7 +574,7 @@ $s(\hgen^i) = s_i$ for $i\in [n+1]$; and $s(\cosetgen\hgen ^i)= s_{n+i}$ for eac
 
 \section{Generalizing to vector lookups and multiple tables}
 Suppose we have several witness polynomials $f_1,\ldots,f_w \in \polysofdeg{n}$,
-and a table of values $t^*\in (\F^w)^d$.
+and a table of values $t^*\in (\F^w)^d$. 
 We wish to check that for each $j\in [n]$
 $(f_1(\hgen^j),\ldots,f_w(\hgen^j))\in t^*$.
 We can use randomization to efficiently reduce to the case of Section \ref{sec:mainscheme}.
@@ -566,12 +590,41 @@ Then e.w.p $d\cdot w/|\F|$, $f(\hgen^j)\notin t$.
 Thus, after the selection of $\alpha$,
 we can run the protocol of the previous section on $f,t$.
 
+As alluded to in the introduction, a natural use case for this vector lookup primitive is a key-value setting, where we have a function $f$ with $w-1$ inputs,
+and wish to verify a vector is of the form $(x_1,\ldots,x_{w-1},f(x_1,\ldots,x_{w-1}))$ for some input $(x_1,\ldots,x_{w-1})$.
 
-\subsection{multiple tables}
+\subsection{Multiple tables}
 Suppose further that we have in fact have multiple tables $t^*_1,\ldots, t^*_\ell$
-and for each $i\in [n]$ wish to check that for some predefined $j\in [\ell]$,
+and for each $i\in [n]$ wish to check that for some predefined $j=j(i)\in [\ell]$  $(f_1(\hgen^i),\ldots,f_w(\hgen^i))\in t^*_j$ .
+We can reduce to the previous setting as follows.
+We create a preprocessed table containing $t^*_1,\ldots, t^*_\ell$ as sub-tables, by adding a column specifying the table index.
 
-\section{A simplified solution for continuous ranges}
+That is, suppose for simplicity that for each $j\in [\ell]$, $t^*_j\in (\F^{w})^{d/\ell}$.
+We construct $t^*\in (\F^{w+1})^d$.
+consisting for each $j\in [\ell], i\in [d/\ell]$ of the element
+$(j,(t^*_j)_i)$.
+We preprocess a polynomial $q\in \polysofdeg{n}$
+such that $q_i =j(i)$, where again $j(i)$ is the relevant subtable to be checked for the $i'th$ row.
+And now apply the method above to check that for each $i\in [n]$
+$(q(\hgen^j),f_1(\hgen^j),\ldots,f_w(\hgen^j))\in t^*$
+
+\section{An optimized solution for continuous ranges}
+Suppose we wish to check that $f_i \subset \set{0,\ldots,d-1}$ for some integer $d< n$.
+We could use our above protocol while setting $t_i = i-1$ for $i\in [d]$.
+By using e.g. $d=n$, the above protocol allowes us to check $f\subset \set{0,\ldots,n-1}$ using one auxiliary polynomial of degree $2n$ (the polynomial $s$ representing the sorted witness) and another of degree $n+1$ (the product aggregating polynomial $Z$). 
+We show a variant of the protocol specifically for continuous ranges with the same prover efficiency allowing for the larger range \set{0,\ldots,c\cdot n-1}.
+
+
+Let us measure the cost of this in terms of auxiliary polynomials given.
+\prv would need to send the sorted polynomial $s\in \polysofdeg{n+d}$.
+And the preprocessing would require computing $t\in \polysofdeg{d}$.
+This would start being prohibitively expensive e.g. for $d=2^{32}$.
+
+For such large $d$, one solution would be to split each value of $f$ into two values in the range $\set{0,\ldots, \sqrt d}$. And then check the values are in this smaller range.
+This will double the size of $f$ to $2n$, and require $s\in \polysofdeg{2n+\sqrt{d}}$.
+
+We propose an alternative solution where we remain with $f\in \polysofdeg{n}$
+and require two auxiliary polynomials $s,s'\in \polysofdeg{n}$
 \bibliographystyle{alpha}
 \bibliography{references}
    \end{document}

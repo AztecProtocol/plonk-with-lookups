@@ -1,10 +1,7 @@
 \BOOKMARK [1][-]{section.1}{Introduction}{}% 1
-\BOOKMARK [1][-]{section.2}{Implementing arbitrary lookup tables}{}% 2
-\BOOKMARK [1][-]{section.3}{Using randomized constraints for key/value mappings}{}% 3
-\BOOKMARK [1][-]{section.4}{From a sorted list to a lookup argument}{}% 4
-\BOOKMARK [1][-]{section.5}{The final permutation check}{}% 5
-\BOOKMARK [1][-]{section.6}{Efficiency Analysis}{}% 6
-\BOOKMARK [1][-]{section.7}{Examples: XOR}{}% 7
-\BOOKMARK [2][-]{subsection.7.1}{example: bit rotations on 32 bit integers}{section.7}% 8
-\BOOKMARK [2][-]{subsection.7.2}{example: unsigned addition}{section.7}% 9
-\BOOKMARK [2][-]{subsection.7.3}{example: Blake2s}{section.7}% 10
+\BOOKMARK [1][-]{section.2}{Preliminaries}{}% 2
+\BOOKMARK [1][-]{section.3}{The main scheme}{}% 3
+\BOOKMARK [1][-]{section.4}{Generalizing to vector lookups and multiple tables}{}% 4
+\BOOKMARK [2][-]{subsection.4.1}{Multiple tables}{section.4}% 5
+\BOOKMARK [1][-]{section.5}{An optimized solution for continuous ranges}{}% 6
+\BOOKMARK [1][-]{section*.6}{References}{}% 7
