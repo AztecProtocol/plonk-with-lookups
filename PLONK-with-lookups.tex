@@ -459,7 +459,7 @@ An $H$-ranged \emph{$(d,D,t,\ell)$-polynomial protocol} is a multiround protocol
 \item The messages of  \verpoly to \prvpoly are arbitrary (but we will concentrate on public coin protocols where the messages are simply random coins).
 
 
- \item At the end of the protocol, suppose $f_1,\ldots,f_t$ are the polynomials that were sent from \prvpoly to \ideal. \verpoly may ask \ideal if certain polynomial identities holds between \set{f_1,\ldots,f_t,g_1,\ldots,g_\ell}.
+ \item At the end of the protocol, suppose $f_1,\ldots,f_t$ are the polynomials that were sent from \prvpoly to \ideal. \verpoly may ask \ideal if certain polynomial identities holds \emph{on $H$} between \set{f_1,\ldots,f_t,g_1,\ldots,g_\ell}.
  Where each identity is of the form
  \[F(X)\defeq G(X, h_1(v_1(X)),\ldots,h_M(v_M(X)))\equiv 0,\]
  for some $h_i\in  \set{f_1,\ldots,f_t,g_1,\ldots,g_\ell}$, $G\in \F[X,X_1,\ldots,X_{M}]$, $v_1,\ldots,v_{M} \in \polysofdeg{d}$
@@ -491,7 +491,8 @@ We refer the reader to Section 4 of \cite{plonk} for more details.
 \paragraph{Notation:}
 
 Fix integers $n,d$ and vectors $f\in \F^n, t\in\F^d$.
-We use the notation $f\subset t$ to mean $\sett{f_i}{i\in [n]}\subset \sett{t_i}{i\in [d]}$. Let $\dom=\set{\hgen,\ldots,\hgen^{n+1}=1}$ be a multiplicative subgroup of order $n+1$ in \F.  Denote by $\cosetgen$ be an element of a non-trivial coset of $H$ in $\F^*$.
+We use the notation $f\subset t$ to mean $\sett{f_i}{i\in [n]}\subset \sett{t_i}{i\in [d]}$. Let $\dom=\set{\hgen,\ldots,\hgen^{n+1}=1}$ be a multiplicative subgroup of order $n+1$ in \F.
+%Denote by $\cosetgen$ be an element of a non-trivial coset of $H$ in $\F^*$.
 For a polynomial $f\in \polyss$ and $i\in [n+1]$ we sometimes denote $f_i\defeq f(\hgen^i)$.
 For a vector $f\in \F^n$, we also denote by $f$ the polynomial in \polysofdeg{n} with $f(\hgen^i) =f_i$.
 
@@ -606,12 +607,12 @@ $\sone (\hgen^i) = s_i$ for $i\in [n+1]$; and $\stwo(\hgen ^i)= s_{n+i}$ for eac
 \begin{proof}
 We start by computing $\aggdeg{\prot}$.
 The prover sends $\sone,\stwo,Z\in \polysofdeg{n+1}$,
-which aggregates to $3n+3$. The second identity checked by the verifier is of the highest degree, containing a product of these three and the linear term $x-\hgen^{n+1}$,
+which aggregates to $3n+3$. The second identity checked by the verifier is of the highest degree, containing a product of these three and the linear term $X-\hgen^{n+1}$,
 which gives us another $3n+2$ from which we subtract $|H|=n+1$.
 In total we get $5n+4$.
 
 We proceed to prove correctness. The check in step \ref{check:consist} shows that $\sone(\hgen^{n+1})=\stwo(\hgen)$, and thus $\sone,\stwo$ indeed consistently describe a single vector $s\in \F^{2n+1}$.
-Using Claim \ref{clm:main_lookup} we know that when $f$'s range is not contained in $t$'s for any choice of $s$ sent by \prvpoly the polynomials $F(\beta,\gamma), G(\beta,\gamma)$ are different.
+Using Claim \ref{clm:main_lookup} we know that when $f$'s range is not contained in $t$'s for any choice of $s$ sent by \prvpoly the polynomials $F(X,Y), G(X,Y)$ are different.
  From the SZ lemma e.w.p \negl \verpoly chooses $\beta,\gamma$ such that $F(\beta,\gamma)\neq G(\beta,\gamma)$. In this case we have $Z(\hgen^{n+d})\neq 1$ which means \verpoly rejects.
 \end{proof}
 
@@ -622,7 +623,7 @@ We wish to check that for each $j\in [n]$
 $(f_1(\hgen^j),\ldots,f_w(\hgen^j))\in t^*$.
 We can use randomization to efficiently reduce to the case of Section \ref{sec:mainscheme}.
 
-For each $i\in [w]$ we will include in the set of preprocessed polynomials $t_i \in \polysofdeg{d}$ with $t_i(\hgen^j) = t_{i,j}$ for each $j\in [d]$.
+For each $i\in [w]$ we will include in the set of preprocessed polynomials $t_i \in \polysofdeg{d}$ with $t_i(\hgen^j) = t^*_{i,j}$ for each $j\in [d]$.
 
 The verifier will choose random $\alpha \in \F$.
 
@@ -643,13 +644,13 @@ We can reduce to the previous setting as follows.
 We create a preprocessed table containing $t^*_1,\ldots, t^*_\ell$ as sub-tables, by adding a column specifying the table index.
 
 That is, suppose for simplicity that for each $j\in [\ell]$, $t^*_j\in (\F^{w})^{d/\ell}$.
-We construct $t^*\in (\F^{w+1})^d$.
-consisting for each $j\in [\ell], i\in [d/\ell]$ of the element
+We construct $t^*\in (\F^{w+1})^d$, 
+containing for each $j\in [\ell], i\in [d/\ell]$ of the element
 $(j,(t^*_j)_i)$.
 We preprocess a polynomial $q\in \polysofdeg{n}$
-such that $q_i =j(i)$, where again $j(i)$ is the relevant subtable to be checked for the $i'th$ row.
-And now apply the method above to check that for each $i\in [n]$
-$(q(\hgen^j),f_1(\hgen^j),\ldots,f_w(\hgen^j))\in t^*$
+such that $q_i =j(i)$, where again $j(i)$ is the subtable we wish the $i$'th value to be in.
+Now apply the method above to check that for each $i\in [n]$,
+$(q(\hgen^i),f_1(\hgen^i),\ldots,f_w(\hgen^i))\in t^*$
 
 \section{An optimized solution for continuous ranges}\label{sec:ranges}
 Suppose we wish to check that $f \subset \set{0,\ldots,d-1}$ for some integer $d< n$.
