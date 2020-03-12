@@ -396,7 +396,7 @@
 
 \section{Introduction}
 When wanting to use zk-SNARKs to prove statements involving standard primitives like AES-128 or SHA-256, one runs into the problem that the operations involved in these primitives are ``SNARK unfriendly'', in the sense of having large representations in the native SNARK language, which typically corresponds to low degree equations over a large prime field.
-Examples of operations with large overhead, are ones involving bit decomposition like bitwise XOR or AND. This has lead to extensive research into STARK and SNARK friendly hash functions that are based solely on native field operations.
+Examples of operations with large overhead, are ones involving bit decomposition like bitwise XOR or AND. This has lead to growing research into STARK and SNARK friendly hash functions and symmetric primitives that are based solely on native field operations \cite{poseidon,marvelous,mimc,mimc2}.
 
 
 We investigate an alternative approach, where for commonly used operations we precompute a look-up table of the legitimate (input, output) combinations; and the prover argues the witness values exist in this table.
@@ -404,7 +404,7 @@ We investigate an alternative approach, where for commonly used operations we pr
 In polynomial language, this ultimately boils down to proving polynomials are the same ``up to multiplicities''.
 That is, suppose that the values in the look-up table are \sett{t_i}{i\in [d]} and the values in the witness are \sett{f_i}{i\in [n]}. We want to show that the polynomials
 \[F(X)\defeq \prod_{i\in [n]} (X-f_i), G(X)\defeq \prod_{i\in [d]}(X-t_i)\]
-have the same roots, ignoring multiplicites, i.e. that for non-negative integers \sett{e_i}{i\in [d]} we  have
+have the same roots, ignoring multiplicites; i.e. that for some non-negative integers \sett{e_i}{i\in [d]} we  have
 $F(X) = \prod_{i\in [d]} (X-t_i)^{e_i}$.
 Bootle et. al \cite{arya} gave an algorithm for this exact problem, also in the context of efficient SNARK arithmetization of a common operation (in their case, repeatedly checking that field elements correspond to certain convenient sparse representations of boolean strings).
 
