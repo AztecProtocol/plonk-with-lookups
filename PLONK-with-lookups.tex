@@ -373,6 +373,8 @@
 \newcommand{\advpc}{\ensuremath{\mathcal A_{\PCscheme}}\xspace}
 \newcommand{\advprot}{\ensuremath{\mathcal A_{\prot}}\xspace}
 \newcommand{\protmany}{\ensuremath{ {\prot}_k}\xspace}
+\newcommand{\sone}{\ensuremath{ h_1}\xspace}
+\newcommand{\stwo}{\ensuremath{ h_{2}}\xspace}
 
 \usepackage{pifont}% http://ctan.org/pkg/pifont
 \newcommand{\cmark}{\ding{51}}%
@@ -386,9 +388,9 @@
 
     
     \begin{abstract}
-     We present a protocol for checking the values of a comitted polynomial $f\in \polysofdeg{n}$ over a multiplicative subgroup $H\subset \F$ of size $n$, are contained in the values of a different comitted polynomial $t\in \polysofdeg{d}$ over the same subgroup $H$. Our protocol can be viewed as a simplification of one from Bootle et. al \cite{arya} for a similar problem, with potential efficiency improvements. In particular, \cite{arya}'s protocol requires comitting to several auxiliary polynomials of degree $d\cdot \log n$, whereas ours requires only one commitment to a single auxiliary polynomial of degree $d+n$, which is much smaller in the case $d\sim n$.
+     We present a protocol for checking the values of a comitted polynomial $f\in \polysofdeg{n}$ over a multiplicative subgroup $H\subset \F$ of size $n$, are contained in the values of a different comitted polynomial $t\in \polysofdeg{d}$ over the same subgroup $H$. Our protocol can be viewed as a simplification of one from Bootle et. al \cite{arya} for a similar problem, with potential efficiency improvements when $d\leq n$. In particular, \cite{arya}'s protocol requires comitting to several auxiliary polynomials of degree $d\cdot \log n$, whereas ours requires three commitments to auxiliary polynomials of degree $n$, which can be much smaller in the case $d\sim n$.
      
-     One common use case of this primitive in the zk-SNARK setting is a ``batched range proof'', where one wishes to check all of $f$'s values on $H$ are in a range $[0,\ldots,M-1]$. We present a slightly optimized protocol for this special case, and pose improving it as an open problem.
+     One common use case of this primitive in the zk-SNARK setting is a ``batched range proof'', where one wishes to check all of $f$'s values on $H$ are in a range $[0,\ldots,M]$. We present a slightly optimized protocol for this special case, and pose improving it as an open problem.
     \end{abstract}
 
 
@@ -425,6 +427,7 @@ Both these issues can be solved by comparing \emph{randomized} difference sets:
 We choose random $\beta \in \F$, and compare the elements in the sequences 
 \sett{t_i+\beta t_{i+1}}{i\in [d-1]}, \sett{s_i +\beta s_{i+1}}{i\in [n-1]}.
 
+
 Seemingly, we have taken ``one step forward and one back'' by adding the random $\beta$, as now pairs $(s_i,s_{i+1})$ with $s_i=s_{i+1}$ will give a non-zero contribution $s_i+\beta \cdot s_{i+1} = (1+\beta)\cdot s_i$. However, all elements corresponding to a repetition are now multiples of $(1+\beta)$ and we are able to use this to ``identify'' them and not use them in the comparison with the table.
 Specifically, we show that this check can be done correctly and efficiently using a ``grand product argument'' similar to the one used in \cite{plonk}'s permutation argument.
 
@@ -436,13 +439,44 @@ Precise details of the scheme are given in Section \ref{sec:mainscheme}.
 
 \section{Preliminaries}
 \paragraph{Polynomial Protocols}
-We use the ranged polynomial protocol terminology from \cite{plonk} to describe our protocols.
-Here a prover sends polynomials of a certain degree bound $d$,
-and at the end of protocol, the verifier can ask whether certain identities hold between the polynomials sent during the protocol, the input polynomials, and the preprocessed polynomials, on a predefined set $H$.
-It is shown in \cite{plonk} how such a protocol can be compiled into one in the algebraic group model using the polynomial commitment scheme of \cite{kate}.
+We use the ranged polynomial protocol terminology from \cite{plonk} to describe our protocols. We repeat the definition for reference.
+
+In such a protocol a prover \prv sends polynomials of a certain degree bound $d$ to an ideal party \ideal, and at the end of protocol, the verifier can ask whether certain identities hold between the polynomials sent during the protocol, the input polynomials, and the preprocessed polynomials, on a predefined set $H$.
+
+More precisely,
+\begin{dfn}\label{dfn:polyprotocol}
+Fix a positive integers $d,D,t,\ell$ and $H\subset \F$.
+An $H$-ranged \emph{$(d,D,t,\ell)$-polynomial protocol} is a multiround protocol between a prover \prvpoly, verifier 
+\verpoly and trusted party \ideal that proceeds as follows.
+
+\begin{enumerate}
+\item The protocol definition includes a set of \emph{preprocessed and input polynomials} $g_1,\ldots,g_\ell \in \polysofdeg{d}$.
+
+\item The messages of \prvpoly are sent to \ideal and are of the form $f$ for $f\in \polysofdeg{d}$. If \prvpoly sends a message not of this form, the protocol is aborted.
+ 
+ 
+\item The messages of  \verpoly to \prvpoly are arbitrary (but we will concentrate on public coin protocols where the messages are simply random coins).
 
 
-For such a protocol \prot, let $\aggdeg{\prot}$ be the maximum over $s_1,\ldots,s_t$ sent by an honest prover during protocol execution of the sum of the degrees of the $s_i$ plus the maximal degree of the verifier identity when plugging in $s_1,\ldots,s_t$ into the verifier identity minus the size of $H$.
+ \item At the end of the protocol, suppose $f_1,\ldots,f_t$ are the polynomials that were sent from \prvpoly to \ideal. \verpoly may ask \ideal if certain polynomial identities holds between \set{f_1,\ldots,f_t,g_1,\ldots,g_\ell}.
+ Where each identity is of the form
+ \[F(X)\defeq G(X, h_1(v_1(X)),\ldots,h_M(v_M(X)))\equiv 0,\]
+ for some $h_i\in  \set{f_1,\ldots,f_t,g_1,\ldots,g_\ell}$, $G\in \F[X,X_1,\ldots,X_{M}]$, $v_1,\ldots,v_{M} \in \polysofdeg{d}$
+ such that $F\in \polysofdeg{D}$ for every choice of $f_1,\ldots,f_t$ made by \prvpoly when following the protocol correctly.
+ 
+ 
+ 
+ \item After receiving the answers from \ideal regarding the identities, \verpoly outputs \acc if all identities hold, and outputs \rej otherwise.
+
+\end{enumerate}
+ 
+\end{dfn}
+
+
+It is shown in Section 4 of \cite{plonk} how such a protocol can be compiled into one in the algebraic group model using the polynomial commitment scheme of \cite{kate}.
+
+
+For such a protocol \prot, let $\aggdeg{\prot}$ be the maximum over $f_1,\ldots,f_t$ sent by an honest prover during protocol execution of $\left(\sum_{i\in [t]} \deg(f_i)+1\right)+D-|H|$.
 
 The prover complexity ends up being closely tied to \aggdeg{\prot} as this corresponds to the number of group operations to commit to all polynomials (including the quotient polynomial that comes up in translating a ranged polynomial protocol to a polynomial protocol) using \cite{kate}. We will thus attempt to minimize \aggdeg{\prot} in our protocols.
 
@@ -521,17 +555,17 @@ Call $P'\subset [n+d-1]$ the set of these $d-1$ indices $j$.
  Claim \ref{clm:main_lookup} motivates the following protocol. 
 It will be convenient to assume $d=n+1$. (If $d\leq n$ pad $t$ with $n-d+1$ repetitions of the last element.)
  \paragraph{Preprocessed polynomials:}
-The polynomial $t \in \polysofdeg{n}$  describing the lookup values.
+The polynomial $t \in \polysofdeg{n+1}$  describing the lookup values.
 
 
 \paragraph{Inputs: $f\in \polysofdeg{n}$}
 \paragraph{Protocol:}
 \begin{enumerate}
- \item Let $s\in \F^{2n+1}$ be the vector that is $(f,t)$ sorted by $t$. Also denote by $s$
- the following polynomial in $\polysofdeg{2n+2}$ that represents $s$ on $\dom \cup \cosetgen \dom$:
-$s(\hgen^i) = s_i$ for $i\in [n+1]$; and $s(\cosetgen\hgen ^i)= s_{n+i}$ for each $i\in [n+1]$.
+ \item Let $s\in \F^{2n+1}$ be the vector that is $(f,t)$ sorted by $t$. We represent $s$ by $\sone,\stwo \in \polysofdeg{n+1}$ as follows.
+%  the following polynomial in $\polysofdeg{2n+2}$ that represents $s$ on $\dom \cup \cosetgen \dom$:
+$\sone (\hgen^i) = s_i$ for $i\in [n+1]$; and $\stwo(\hgen ^i)= s_{n+i}$ for each $i\in [n+1]$.
  
- \item \prvpoly computes the polynomial $s$ and sends it to \ideal.
+ \item \prvpoly computes the polynomials $\sone,\stwo$ and sends them to the ideal party \ideal.
  \item \verpoly chooses random $\beta,\gamma \in \F$ and sends them to \prvpoly.
  \item \prvpoly computes a polynomial $Z\in \polysofdeg{n+1}$ that aggregates the value $F(\beta,\gamma)/G(\beta,\gamma)$ where $F,G$ are as described above. Specifically, we let
 \begin{enumerate}
@@ -548,9 +582,9 @@ $s(\hgen^i) = s_i$ for $i\in [n+1]$; and $s(\cosetgen\hgen ^i)= s_{n+i}$ for eac
  \begin{enumerate}
   \item $L_1(Z-1)\equiv 0$
   \item 
-  \[(X-\hgen^{n+1})Z(X)(1+\beta)\cdot (\gamma + f(X))(\gamma(1+\beta)+ t(X)+\beta t(X\cdot \hgen) )\]
-  \[\equiv (X-\hgen^{n+1}) Z(X\cdot \hgen)(\gamma(1+\beta)+ s(X)+\beta s(X\cdot \hgen))(\gamma(1+\beta)+ s(\cosetgen \cdot X)+\beta s(\cosetgen \cdot X\cdot \hgen)).\]
-  \item $L_{n+1}(s(X)-s(\cosetgen X \hgen))\equiv 0$
+  \[(X-\hgen^{n+1})Z(X)(1+\beta)\cdot (\gamma + f(X))(\gamma(1+\beta)+ t(X)+\beta t(\hgen \cdot X) )\]
+  \[\equiv (X-\hgen^{n+1}) Z(\hgen\cdot X)(\gamma(1+\beta)+ \sone(X)+\beta \sone(\hgen \cdot X))(\gamma(1+\beta)+ \stwo(X)+\beta \stwo(\hgen \cdot X)).\]
+  \item\label{check:consist} $L_{n+1}(\sone(X)-\stwo(\hgen \cdot X))\equiv 0$
 %   \item $Z(\cosetgen\cdot  X)(\gamma(1+\beta)+ t(X)+\beta t(X\cdot \hgen) )=Z(\cosetgen\hgen \cdot  X)(\gamma(1+\beta)+ s(\cosetgen X)+\beta s(\cosetgen X\cdot \hgen) )$.
   \item $L_{n+1}(Z(X)-1)\equiv 0$
  
@@ -563,12 +597,20 @@ $s(\hgen^i) = s_i$ for $i\in [n+1]$; and $s(\cosetgen\hgen ^i)= s_{n+i}$ for eac
  and outputs \acc iff all checks hold.
 \end{enumerate}
 \begin{lemma}\label{lem:lookupprot}
- Suppose that $\sett{f(\hgen^i)}{i\in [n]}$ is not contained in  \sett{t(\hgen^i}{i\in [d]}.
- Then for any strategy of \adv playing the role of \prvpoly in the above protocol, the probability that
+ Suppose that $\sett{f(\hgen^i)}{i\in [n]}$ is not contained in  \sett{t(\hgen^i)}{i\in [n+1]}.
+ Then for any strategy of \adv playing the role of \prvpoly in the above protocol \prot, the probability that
  \verpoly accepts is \negl.
+ Furthermore, we have $\aggdeg{\prot} = 5n+4$.
 \end{lemma}
 \begin{proof}
- Using Claim \ref{clm:main_lookup} we know that when $f$'s range is not contained in $t$'s for any choice of $s$ sent by \prvpoly the polynomials $F(\beta,\gamma), G(\beta,\gamma)$ are different.
+We start by computing $\aggdeg{\prot}$.
+The prover sends $\sone,\stwo,Z\in \polysofdeg{n+1}$,
+which aggregates to $3n+3$. The second identity checked by the verifier is of the highest degree, containing a product of these three and the linear term $x-\hgen^{n+1}$,
+which gives us another $3n+2$ from which we subtract $|H|=n+1$.
+In total we get $5n+4$.
+
+We proceed to prove correctness. The check in step \ref{check:consist} shows that $\sone(\hgen^{n+1})=\stwo(\hgen)$, and thus $\sone,\stwo$ indeed consistently describe a single vector $s\in \F^{2n+1}$.
+Using Claim \ref{clm:main_lookup} we know that when $f$'s range is not contained in $t$'s for any choice of $s$ sent by \prvpoly the polynomials $F(\beta,\gamma), G(\beta,\gamma)$ are different.
  From the SZ lemma e.w.p \negl \verpoly chooses $\beta,\gamma$ such that $F(\beta,\gamma)\neq G(\beta,\gamma)$. In this case we have $Z(\hgen^{n+d})\neq 1$ which means \verpoly rejects.
 \end{proof}
 
@@ -608,23 +650,128 @@ such that $q_i =j(i)$, where again $j(i)$ is the relevant subtable to be checked
 And now apply the method above to check that for each $i\in [n]$
 $(q(\hgen^j),f_1(\hgen^j),\ldots,f_w(\hgen^j))\in t^*$
 
-\section{An optimized solution for continuous ranges}
-Suppose we wish to check that $f_i \subset \set{0,\ldots,d-1}$ for some integer $d< n$.
+\section{An optimized solution for continuous ranges}\label{sec:ranges}
+Suppose we wish to check that $f \subset \set{0,\ldots,d-1}$ for some integer $d< n$.
 We could use our above protocol while setting $t_i = i-1$ for $i\in [d]$.
-By using e.g. $d=n$, the above protocol allowes us to check $f\subset \set{0,\ldots,n-1}$ using one auxiliary polynomial of degree $2n$ (the polynomial $s$ representing the sorted witness) and another of degree $n+1$ (the product aggregating polynomial $Z$). 
-We show a variant of the protocol specifically for continuous ranges with the same prover efficiency allowing for the larger range \set{0,\ldots,c\cdot n-1}.
+By using $d=n+1$, the above protocol allowes us to check $f\subset \set{0,\ldots,n}$ with complexity $\aggdeg{\prot}=5n+4$ as stated in Lemma \ref{lem:lookupprot}. 
+We present an alternative protocol with the same complexity that will allow us to check $f\subset \set{0,\ldots,2n-2}$.
+%almost exactly the same complexity ($5n+5$ instead of $5n+4$).
+In fact, the protocol naturally generalizes for ranges $\set{0,\ldots,c(n-1)}$ while only increase the degree of verifier constraints. Thus, one may choose a larger $c$ in protocols where the range proof is a subroutine, according to the maximal constraint degree in other parts of the protocol.
 
 
-Let us measure the cost of this in terms of auxiliary polynomials given.
-\prv would need to send the sorted polynomial $s\in \polysofdeg{n+d}$.
-And the preprocessing would require computing $t\in \polysofdeg{d}$.
-This would start being prohibitively expensive e.g. for $d=2^{32}$.
+The idea is the following. We emphasize we are assuming the range is in fact contained in \F, i.e. $cn < |\F|$.
 
-For such large $d$, one solution would be to split each value of $f$ into two values in the range $\set{0,\ldots, \sqrt d}$. And then check the values are in this smaller range.
-This will double the size of $f$ to $2n$, and require $s\in \polysofdeg{2n+\sqrt{d}}$.
+Suppose that we enforce that the sorted witness $s$ starts from zero and ends at $c\cdot n$, i.e. $s_1=0$, $s_{2n+1} = c\cdot (n-1)$, and that for each $i\in [2n]$, $s_{i+1}-s_i \leq c$.
+This sufficies to deduce that $s_i \in \set{0,\ldots,c(n-1)}$ for each $i\in [2n+1]$.
 
-We propose an alternative solution where we remain with $f\in \polysofdeg{n}$
-and require two auxiliary polynomials $s,s'\in \polysofdeg{n}$
+The condition $s_{i+1}-s_i \leq c$ can be enforced by a constraint that plugs in this difference into the degree $c+1$ polynomial that vanishes on \set{0,\ldots,c}. Enforcing the increments this way obviates the need to look at a permutation between differences, and instead we can directly check a permutation between the values of $(f,t)$ and $s$; where $t$ is the table of $c$'th multiples, i.e. $t_i = c\cdot (i-1)$ for $i\in [n+1]$.
+
+We proceed to describe the protocol in detail.
+As in the first protocol, we assume $H$ is a multiplicative subgroup of order $n+1$ with generator \hgen.
+
+The protocol is parameterized by a positive integer parameter $c$.
+And we denote by $P$ the polynomial
+$P(X)\defeq \prod_{i= 0}^c(X-i)$.
+\paragraph{Preprocessed polynomials:}
+The polynomial $t \in \polysofdeg{n}$  with $t_i = c\cdot (i-1)$ for $i\in [n]$.
+
+\paragraph{Inputs: $f\in \polysofdeg{n}$}
+\paragraph{Protocol:}
+\begin{enumerate}
+ \item Let $s\in \F^{2n+1}$ be the vector that is $(f,t)$ sorted by $t$. We represent $s$ by $\sone,\stwo \in \polysofdeg{n+1}$ as follows.
+%  the following polynomial in $\polysofdeg{2n+2}$ that represents $s$ on $\dom \cup \cosetgen \dom$:
+$\sone (\hgen^i) = s_i$ for $i\in [n+1]$; and $\stwo(\hgen ^i)= s_{n+i}$ for each $i\in [n]$ and $\stwo(\hgen^{n+1})=c(n-1)$.
+ 
+ \item \prvpoly computes the polynomials $\sone,\stwo$ and sends them to the ideal party \ideal.
+ \item \verpoly chooses random $\gamma \in \F$ and sends it to \prvpoly.
+ \item \prvpoly computes a polynomial $Z\in \polysofdeg{n+1}$ that aggregates the value $F(\beta,\gamma)/G(\beta,\gamma)$ where $F,G$ are as described above. Specifically, we let
+\begin{enumerate}
+ \item  $Z(\hgen) = 1$,
+\item For $2\leq i \leq n$
+% \[Z(\hgen^i)=(1+\beta)^{i-1}\prod_{1\leq j<i} (\gamma + f(\hgen^j))/(\gamma(1+\beta) + s(\hgen^j) + \beta s(\hgen^{j+1})),\] 
+% \item For $1\leq i \leq n+1$,
+\[Z(\hgen^{i})= \frac{\prod_{j < i} (\gamma + f_j)\cdot \prod_{1\leq j < i} (\gamma+ t_j)}{\prod_{1\leq j <i} (\gamma + s_j)(\gamma+ s_{n+j})},\]
+ and
+\item $Z(\hgen^{n+1})=1$.
+\end{enumerate}
+ \item \prvpoly sends $Z$ to \ideal.
+ \item \verpoly checks that $Z$ is indeed of the form described above, and that $Z(\hgen^{n+d})=1$. More precisely, \verpoly checks the following identities on $H$.
+ \begin{enumerate}
+\item \label{step:rangefirst} $L_1(\sone(X)) \equiv 0$.
+\item$P\left(\sone(\hgen\cdot X)- \sone(X)\right)\equiv 0$.
+\item $P\left(\stwo(\hgen\cdot  X)- \stwo(X)\right)\equiv 0$.
+  \item\label{check:consisttwo} $L_{n+1}(\sone(X)-\stwo(X \hgen))\equiv 0$
+\item \label{step:rangefirstlast}$L_{n+1}(\stwo(X)) \equiv c\cdot n$.
+  \item \label{step:rangepermfirst}$L_1(Z(X)-1)\equiv 0$
+  \item 
+  \[(X-\hgen^{n+1}) (Z(X) (\gamma + f(X))(\gamma+ t(X))\]
+  \[\equiv (X-\hgen^{n+1})\cdot  Z(\hgen \cdot X)(\gamma+ \sone(X))(\gamma+ \stwo(X))) .\]
+%   \item $Z(\cosetgen\cdot  X)(\gamma(1+\beta)+ t(X)+\beta t(X\cdot \hgen) )=Z(\cosetgen\hgen \cdot  X)(\gamma(1+\beta)+ s(\cosetgen X)+\beta s(\cosetgen X\cdot \hgen) )$.
+
+\item \label{step:rangepermlast}$L_{n+1}(Z(X)-1)\equiv 0$
+ 
+ \end{enumerate}
+
+%  \begin{enumerate}
+%   \item $L_1(a) (Z(a)-1) =0$.
+%   \item $Z(a)f'(a) = g'(a)Z(a\cdot \hgen)$.
+%  \end{enumerate}
+ and outputs \acc iff all checks hold.
+\end{enumerate}
+\begin{remark}
+ Note that if we are in a situation where the sorted values of $f$ alone already have a consecutive gap of at most $c$, we can use a simpler protocol showing a permutation between $f$ and $s$ without needing to use $t$.
+\end{remark}
+
+
+
+\begin{lemma}\label{lem:rangeprot}
+Fix positive integer $c$.
+ Suppose that $\sett{f(\hgen^i)}{i\in [n]}$ is not contained in  \sett{0,\ldots,c(n-1)}.
+ Then for any strategy of \adv playing the role of \prvpoly in the above protocol \prot, the probability that \verpoly accepts is \negl.
+ Furthermore, for $c\geq 2$ we have $\aggdeg{\prot} = (3+c)n+2$.
+\end{lemma}
+
+
+\begin{proof}
+ We compute \aggdeg{\prot}:
+ As in the previous protocol \prv sends $Z,\sone,\stwo \in \polysofdeg{n+1}$,
+ which aggregates to $3n+3$.
+ Now, for $c\geq 2$ the highest degree constraints are the check
+ $P\left(\sone(\hgen\cdot X)- \sone(X)\right)\equiv 0$ (and the same check for \stwo).
+ Which gives degree $(c+1)\cdot n$ to which we add one and subtract $|H|=n+1$;
+ totalling in $3n+3+(c+1)\cdot n - (n+1) = (3+c)n+2$.
+ 
+ Now for the main claim, assume that for some $i\in [n]$, $f_i \notin \set{0,\ldots,cn}$.
+ The checks in steps \ref{step:rangefirst}-\ref{step:rangefirstlast} imply 
+ that the values \sett{\sone(\hgen^i),\stwo(\hgen^i)}{i\in [n]} are all in the range \set{0,\ldots, c(n-1)}.
+ Define polynomials 
+ \[F(X) \defeq \prod_{i\in [n]} (X-f(\hgen^i))(X-t(\hgen^i)),
+ G(X) \defeq \prod_{i\in [n]} (X-\sone(\hgen^i))(X-\stwo(\hgen^i)))
+ \]
+Under the assumption that for some $i\in [n]$, $f_i \notin \set{0,\ldots,cn}$,
+we have that $F$ and $G$ are distinct polynomials.
+
+The checks in steps \ref{step:rangepermfirst}-\ref{step:rangepermlast} imply
+that $F(\gamma) = G(\gamma)$.
+
+Since $\gamma \in \F$ is chosen uniformly it follows that \verpoly accepts with probability \negl.
+ 
+ \end{proof}
+
+
+
+
+% 
+% Let us measure the cost of this in terms of auxiliary polynomials given.
+% \prv would need to send the sorted polynomial $s\in \polysofdeg{n+d}$.
+% And the preprocessing would require computing $t\in \polysofdeg{d}$.
+% This would start being prohibitively expensive e.g. for $d=2^{32}$.
+% 
+% For such large $d$, one solution would be to split each value of $f$ into two values in the range $\set{0,\ldots, \sqrt d}$. And then check the values are in this smaller range.
+% This will double the size of $f$ to $2n$, and require $s\in \polysofdeg{2n+\sqrt{d}}$.
+% 
+% We propose an alternative solution where we remain with $f\in \polysofdeg{n}$
+% and require two auxiliary polynomials $s,s'\in \polysofdeg{n}$
 \bibliographystyle{alpha}
 \bibliography{references}
    \end{document}
