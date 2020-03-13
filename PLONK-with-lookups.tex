@@ -103,7 +103,7 @@
 \newcommand{\Gstar}{\ensuremath{{\mathbb G}^*}\xspace}
 \newcommand{\x}{\ensuremath{\mathbf{x}}\xspace}
 \newcommand{\z}{\ensuremath{\mathbf{z}}\xspace}
-\newcommand{\X}{\ensuremath{\mathbf{X}}\xspace}
+% \newcommand{\X}{\ensuremath{\mathbf{X}}\xspace}
 
 \num\newcommand{\G2}{\ensuremath{{\mathbb G}_2}\xspace}
 %\num\newcommand{\G11}{\ensuremath{\G1\setminus \set{0} }\xspace}
@@ -376,6 +376,7 @@
 \newcommand{\protmany}{\ensuremath{ {\prot}_k}\xspace}
 \newcommand{\sone}{\ensuremath{ h_1}\xspace}
 \newcommand{\stwo}{\ensuremath{ h_{2}}\xspace}
+\newcommand{\X}{\ensuremath{ {\mathbf{x}}}\xspace}
 
 \usepackage{pifont}% http://ctan.org/pkg/pifont
 \newcommand{\cmark}{\ding{51}}%
@@ -582,15 +583,15 @@ $\sone (\hgen^i) = s_i$ for $i\in [n+1]$; and $\stwo(\hgen ^i)= s_{n+i}$ for eac
 \item $Z(\hgen^{n+1})=1$.
 \end{enumerate}
  \item \prvpoly sends $Z$ to \ideal.
- \item \verpoly checks that $Z$ is indeed of the form described above, and that $Z(\hgen^{n+d})=1$. More precisely, \verpoly checks the following identities on $H$.
+ \item \verpoly checks that $Z$ is indeed of the form described above, and that $Z(\hgen^{n+1})=1$. More precisely, \verpoly checks the following identities for all $\X\in H$.
  \begin{enumerate}
-  \item $L_1(Z-1)\equiv 0$
+  \item $L_1(\X)(Z(\X)-1)= 0$.
   \item 
-  \[(X-\hgen^{n+1})Z(X)(1+\beta)\cdot (\gamma + f(X))(\gamma(1+\beta)+ t(X)+\beta t(\hgen \cdot X) )\]
-  \[\equiv (X-\hgen^{n+1}) Z(\hgen\cdot X)(\gamma(1+\beta)+ \sone(X)+\beta \sone(\hgen \cdot X))(\gamma(1+\beta)+ \stwo(X)+\beta \stwo(\hgen \cdot X)).\]
-  \item\label{check:consist} $L_{n+1}(\sone(X)-\stwo(\hgen \cdot X))\equiv 0$
-%   \item $Z(\cosetgen\cdot  X)(\gamma(1+\beta)+ t(X)+\beta t(X\cdot \hgen) )=Z(\cosetgen\hgen \cdot  X)(\gamma(1+\beta)+ s(\cosetgen X)+\beta s(\cosetgen X\cdot \hgen) )$.
-  \item $L_{n+1}(Z(X)-1)\equiv 0$
+  \[(\X-\hgen^{n+1})Z(\X)(1+\beta)\cdot (\gamma + f(\X))(\gamma(1+\beta)+ t(\X)+\beta t(\hgen \cdot \X) )\]
+  \[= (\X-\hgen^{n+1}) Z(\hgen\cdot \X)(\gamma(1+\beta)+ \sone(\X)+\beta \sone(\hgen \cdot \X))(\gamma(1+\beta)+ \stwo(\X)+\beta \stwo(\hgen \cdot \X))\]
+  \item\label{check:consist} $L_{n+1}(\X)(\sone(\X)-\stwo(\hgen \cdot \X))= 0$.
+%   \item $Z(\cosetgen\cdot  \X)(\gamma(1+\beta)+ t(\X)+\beta t(\X\cdot \hgen) )=Z(\cosetgen\hgen \cdot  \X)(\gamma(1+\beta)+ s(\cosetgen \X)+\beta s(\cosetgen \X\cdot \hgen) )$.
+  \item $L_{n+1}(\X)(Z(\X)-1)= 0$.
  
  \end{enumerate}
 
@@ -698,20 +699,19 @@ $\sone (\hgen^i) = s_i$ for $i\in [n+1]$; and $\stwo(\hgen ^i)= s_{n+i}$ for eac
 \item $Z(\hgen^{n+1})=1$.
 \end{enumerate}
  \item \prvpoly sends $Z$ to \ideal.
- \item \verpoly checks that $Z$ is indeed of the form described above, and that $Z(\hgen^{n+d})=1$. More precisely, \verpoly checks the following identities on $H$.
+ \item  \verpoly checks the following identities for all $\X \in H$.
  \begin{enumerate}
-\item \label{step:rangefirst} $L_1(\sone(X)) \equiv 0$.
-\item$P\left(\sone(\hgen\cdot X)- \sone(X)\right)\equiv 0$.
-\item $P\left(\stwo(\hgen\cdot  X)- \stwo(X)\right)\equiv 0$.
-  \item\label{check:consisttwo} $L_{n+1}(\sone(X)-\stwo(X \hgen))\equiv 0$
-\item \label{step:rangefirstlast}$L_{n+1}(\stwo(X)) \equiv c\cdot n$.
-  \item \label{step:rangepermfirst}$L_1(Z(X)-1)\equiv 0$
+\item \label{step:rangefirst} $L_1(\X)(\sone(\X)) = 0$.
+\item$P\left(\sone(\hgen\cdot \X)- \sone(\X)\right)= 0$.
+\item $P\left(\stwo(\hgen\cdot  \X)- \stwo(\X)\right)= 0$.
+  \item\label{check:consisttwo} $L_{n+1}(\X)(\sone(\X)-\stwo(\hgen\cdot \X ))= 0$
+\item \label{step:rangefirstlast}$L_{n+1}(\X)(\stwo(\X)) = c\cdot n$.
+  \item \label{step:rangepermfirst}$L_1(\X)(Z(\X)-1)= 0$.
   \item 
-  \[(X-\hgen^{n+1}) (Z(X) (\gamma + f(X))(\gamma+ t(X))\]
-  \[\equiv (X-\hgen^{n+1})\cdot  Z(\hgen \cdot X)(\gamma+ \sone(X))(\gamma+ \stwo(X))) .\]
-%   \item $Z(\cosetgen\cdot  X)(\gamma(1+\beta)+ t(X)+\beta t(X\cdot \hgen) )=Z(\cosetgen\hgen \cdot  X)(\gamma(1+\beta)+ s(\cosetgen X)+\beta s(\cosetgen X\cdot \hgen) )$.
+  \[(\X-\hgen^{n+1}) (Z(\X) (\gamma + f(\X))(\gamma+ t(\X))= (\X-\hgen^{n+1})\cdot  Z(\hgen \cdot \X)(\gamma+ \sone(\X))(\gamma+ \stwo(\X))) \]
+%   \item $Z(\cosetgen\cdot  \X)(\gamma(1+\beta)+ t(\X)+\beta t(\X\cdot \hgen) )=Z(\cosetgen\hgen \cdot  \X)(\gamma(1+\beta)+ s(\cosetgen \X)+\beta s(\cosetgen \X\cdot \hgen) )$.
 
-\item \label{step:rangepermlast}$L_{n+1}(Z(X)-1)\equiv 0$
+\item \label{step:rangepermlast}$L_{n+1}(\X)(Z(\X)-1)\equiv 0$.
  
  \end{enumerate}
 
