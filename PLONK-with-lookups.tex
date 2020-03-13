@@ -82,7 +82,7 @@
 \newcommand{\bsigma}{\boldsymbol{\sigma}}
 %%% the "real" document content comes below...
 %\newcommand{\papertitle}{$\mathsf{Maitreya}$: Improved Prover Efficiency in Fully Succinct Universal zk-SNARKs through Permutation Arguments for Multiplicative Subgroups}
-\newcommand{\papertitle}{A simplified polynomial protocol for look-up tables}
+\newcommand{\papertitle}{A simplified polynomial protocol for lookup tables}
 %\newcommand{\authorname}}
 \newcommand{\company}{}
 \title{ \bf \papertitle \\[0.72cm]}
@@ -389,7 +389,7 @@
 
     
     \begin{abstract}
-     We present a protocol for checking the values of a comitted polynomial $f\in \polysofdeg{n}$ over a multiplicative subgroup $H\subset \F$ of size $n$, are contained in the values of a different comitted polynomial $t\in \polysofdeg{d}$ over the same subgroup $H$. Our protocol can be viewed as a simplification of one from Bootle et. al \cite{arya} for a similar problem, with potential efficiency improvements when $d\leq n$. In particular, \cite{arya}'s protocol requires comitting to several auxiliary polynomials of degree $d\cdot \log n$, whereas ours requires three commitments to auxiliary polynomials of degree $n$, which can be much smaller in the case $d\sim n$.
+     We present a protocol for checking the values of a committed polynomial $f\in \polysofdeg{n}$ over a multiplicative subgroup $H\subset \F$ of size $n$, are contained in the values of a table $t\in \F^d$. Our protocol can be viewed as a simplification of one from Bootle et. al \cite{arya} for a similar problem, with potential efficiency improvements when $d\leq n$. In particular, \cite{arya}'s protocol requires comitting to several auxiliary polynomials of degree $d\cdot \log n$, whereas ours requires three commitments to auxiliary polynomials of degree $n$, which can be much smaller in the case $d\sim n$.
      
      One common use case of this primitive in the zk-SNARK setting is a ``batched range proof'', where one wishes to check all of $f$'s values on $H$ are in a range $[0,\ldots,M]$. We present a slightly optimized protocol for this special case, and pose improving it as an open problem.
     \end{abstract}
@@ -400,10 +400,10 @@ When wanting to use zk-SNARKs to prove statements involving standard primitives 
 Examples of operations with large overhead, are ones involving bit decomposition like bitwise XOR or AND. This has lead to growing research into STARK and SNARK friendly hash functions and symmetric primitives that are based solely on native field operations \cite{poseidon,marvelous,mimc,mimc2}.
 
 
-We investigate an alternative approach, where for commonly used operations we precompute a look-up table of the legitimate (input, output) combinations; and the prover argues the witness values exist in this table.
+We investigate an alternative approach, where for commonly used operations we precompute a lookup table of the legitimate (input, output) combinations; and the prover argues the witness values exist in this table.
 
 In polynomial language, this ultimately boils down to proving polynomials are the same ``up to multiplicities''.
-That is, suppose that the values in the look-up table are \sett{t_i}{i\in [d]} and the values in the witness are \sett{f_i}{i\in [n]}. We want to show that the polynomials
+That is, suppose that the values in the lookup table are \sett{t_i}{i\in [d]} and the values in the witness are \sett{f_i}{i\in [n]}. We want to show that the polynomials
 \[F(X)\defeq \prod_{i\in [n]} (X-f_i), G(X)\defeq \prod_{i\in [d]}(X-t_i)\]
 have the same roots, ignoring multiplicites; i.e. that for some non-negative integers \sett{e_i}{i\in [d]} we  have
 $F(X) = \prod_{i\in [d]} (X-t_i)^{e_i}$.
@@ -439,6 +439,8 @@ A technicality is that as mentioned this approach assumes all of $t$'s values ap
 Precise details of the scheme are given in Section \ref{sec:mainscheme}.
 
 \section{Preliminaries}
+\paragraph{Terminology}
+For integer $d$, we denote by \polysofdeg{d} the set of univariate polynomials over \F of degree smaller than $d$.
 \paragraph{Polynomial Protocols}
 We use the ranged polynomial protocol terminology from \cite{plonk} to describe our protocols. We repeat the definition for reference.
 
@@ -661,12 +663,11 @@ We present an alternative protocol with the same complexity that will allow us t
 In fact, the protocol naturally generalizes for ranges $\set{0,\ldots,c(n-1)}$ while only increasing the degree of verifier constraints. Thus, one may choose a larger $c$ in protocols where the range proof is a subroutine, according to the maximal constraint degree in other parts of the protocol.
 
 
-The idea is the following. We emphasize we are assuming the range is in fact contained in \F, i.e. $cn < |\F|$.
-
-Suppose that we enforce that the sorted witness $s$ starts from zero and ends at $c\cdot n$, i.e. $s_1=0$, $s_{2n+1} = c\cdot (n-1)$, and that for each $i\in [2n]$, $s_{i+1}-s_i \leq c$.
+The idea is the following. (We emphasize we are assuming the range is in fact contained in \F, i.e. $cn < |\F|$.)
+Suppose that we enforce that the sorted witness $s$ starts from zero and ends at $c\cdot (n-1)$, i.e. $s_1=0$, $s_{2n+1} = c\cdot (n-1)$, and that for each $i\in [2n]$, $s_{i+1}-s_i \leq c$.
 This sufficies to deduce that $s_i \in \set{0,\ldots,c(n-1)}$ for each $i\in [2n+1]$.
 
-The condition $s_{i+1}-s_i \leq c$ can be enforced by a constraint that plugs in this difference into the degree $c+1$ polynomial that vanishes on \set{0,\ldots,c}. Enforcing the increments this way obviates the need to look at a permutation between differences, and instead we can directly check a permutation between the values of $(f,t)$ and $s$; where $t$ is the table of $c$'th multiples, i.e. $t_i = c\cdot (i-1)$ for $i\in [n+1]$.
+The condition $s_{i+1}-s_i \leq c$ can be enforced by a constraint that plugs in this difference into the degree $c+1$ polynomial that vanishes on \set{0,\ldots,c}. Enforcing the increments this way obviates the need to look at a permutation between differences, and instead we can directly check a permutation between the values of $(f,t)$ and $s$; where $t$ is the table of $c$'th multiples, i.e. $t_i = c\cdot (i-1)$ for $i\in [n]$.
 
 We proceed to describe the protocol in detail.
 As in the first protocol, we assume $H$ is a multiplicative subgroup of order $n+1$ with generator \hgen.
@@ -762,7 +763,7 @@ Since $\gamma \in \F$ is chosen uniformly it follows that \verpoly accepts with 
 
 
 \section*{Acknowledgements} 
-We thank Jens Groth for introducing us to the look up protocol of \cite{arya}.
+We thank Jens Groth for introducing us to the lookup protocol of \cite{arya}.
 
 % 
 % Let us measure the cost of this in terms of auxiliary polynomials given.
