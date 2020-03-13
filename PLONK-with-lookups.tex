@@ -473,16 +473,29 @@ An $H$-ranged \emph{$(d,D,t,\ell)$-polynomial protocol} is a multiround protocol
  \item After receiving the answers from \ideal regarding the identities, \verpoly outputs \acc if all identities hold, and outputs \rej otherwise.
 
 \end{enumerate}
- 
-\end{dfn}
-
-
+ \end{dfn}
 It is shown in Section 4 of \cite{plonk} how such a protocol can be compiled into one in the algebraic group model using the polynomial commitment scheme of \cite{kate}.
 
 
 For such a protocol \prot, let $\aggdeg{\prot}$ be the maximum over $f_1,\ldots,f_t$ sent by an honest prover during protocol execution of $\left(\sum_{i\in [t]} \deg(f_i)+1\right)+D-|H|$.
 
 The prover complexity ends up being closely tied to \aggdeg{\prot} as this corresponds to the number of group operations to commit to all polynomials (including the quotient polynomial that comes up in translating a ranged polynomial protocol to a polynomial protocol) using \cite{kate}. We will thus attempt to minimize \aggdeg{\prot} in our protocols.
+
+ 
+ \paragraph{Lagrange bases and multiplicative subgroups}
+ In our protocols, we take $H$ to be a multiplicative subgroup of some order $N$ with generator \hgen.
+ For $i\in [N]$, we denote by $L_i\in \polysofdeg{N}$ the $i$'th Lagrange polynomial for $H$, that satisfies $L_i(\hgen^i)=1$ and $L_i(\hgen^j)=0$ for $j\neq i$.
+ These polynomials are covenient when specifying a point check in an $H$-ranged protocol.
+ For example, requiring $L_i(\X)f(\X)=0$ for all $\X\in H$ is equivalent to 
+ $f(\hgen^i)=0$.
+ 
+ The generator \hgen is convenient for specifying constraints on ``neighboring values''.
+ For example, the constraint 
+ $f(\hgen\cdot \X)- f(\X) =1$
+ means that $f$'s value grows by one when going to the ``next'' point.
+ 
+
+
 
 
 We refer the reader to Section 4 of \cite{plonk} for more details.
