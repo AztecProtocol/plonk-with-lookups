@@ -538,7 +538,7 @@ we have
  
  Suppose first that $f\subset t$ and $s\in \F^{n+d}$ is $(f,t)$ sorted by $t$.
 
- Then for each $j\in [d-1]$, there is an index $i\in [n+d-1]$ such that
+ Then for each $j\in [d-1]$, there is a distinct index $i\in [n+d-1]$ such that
  $ (t_j,t_{j+1})=(s_i,s_{i+1})$.
  The corresponding factors in $F,G$ are equal. That is,
  \[(\gamma + (t_j + \beta t_{j+1})/(1+\beta)) \equiv (\gamma + (s_i + \beta s_{i+1})/(1+\beta))\]
@@ -546,9 +546,11 @@ we have
  Let $P'\subset [n+d-1]$ the set of these $d-1$ indices $i$
  , and let $P\defeq [n+d-1]\setminus P'$.
  The $n$ indices $i\in P$ are such 
- that $s_i=s_{i+1}$, and $\sett{s_i}{i\in P}$ equals $\sett{f_i}{i\in [n]}$. For each $i\in P$, the corresponding factor of $G$, will be
+ that $s_i=s_{i+1}$, and  $\sett{s_i}{i\in P}$ equals $\sett{f_i}{i\in [n]}$ as multisets.
+ That is, we have a one-to-one map $j:P\to [n]$ such that for each $i\in P$, $s_i = f_{j(i)}$.
+ For each $i\in P$, the corresponding factor of $G$, will be
  \[ \gamma + (s_i + \beta s_{i+1})/(1+\beta)= \gamma + s_i,\]
- which, for the $j$ such that $s_i =f_j$ will equal the factor $(\gamma + f_j)$ in $F$.
+ which, for the matching $j$ such that $s_i =f_j$, equals the factor $(\gamma + f_j)$ in $F$.
  
  
  For the other direction, assume $F\equiv G$ as polynomials in $\F[\beta,\gamma]$.  
@@ -591,7 +593,7 @@ $\sone (\hgen^i) = s_i$ for $i\in [n+1]$; and $\stwo(\hgen ^i)= s_{n+i}$ for eac
 \item For $2\leq i \leq n$
 % \[Z(\hgen^i)=(1+\beta)^{i-1}\prod_{1\leq j<i} (\gamma + f(\hgen^j))/(\gamma(1+\beta) + s(\hgen^j) + \beta s(\hgen^{j+1})),\] 
 % \item For $1\leq i \leq n+1$,
-\[Z(\hgen^{i})= \frac{(1+\beta)^n \prod_{j < i} (\gamma + f_j)\cdot \prod_{1\leq j < i} (\gamma(1+\beta)+ t_j + \beta t_{j+1})}{\prod_{1\leq j <i} (\gamma(1+\beta)+ s_j + \beta s_{j+1})(\gamma(1+\beta)+ s_{n+j} + \beta s_{j+1})},\]
+\[Z(\hgen^{i})= \frac{(1+\beta)^n \prod_{j < i} (\gamma + f_j)\cdot \prod_{1\leq j < i} (\gamma(1+\beta)+ t_j + \beta t_{j+1})}{\prod_{1\leq j <i} (\gamma(1+\beta)+ s_j + \beta s_{j+1})(\gamma(1+\beta)+ s_{n+j} + \beta s_{n+j+1})},\]
  and
 \item $Z(\hgen^{n+1})=1$.
 \end{enumerate}
@@ -671,7 +673,7 @@ $(q(\hgen^i),f_1(\hgen^i),\ldots,f_w(\hgen^i))\in t^*$
 \section{An optimized solution for continuous ranges}\label{sec:ranges}
 Suppose we wish to check that $f \subset \set{0,\ldots,d-1}$ for some integer $d< n$.
 We could use our above protocol while setting $t_i = i-1$ for $i\in [d]$.
-By using $d=n+1$, the above protocol allowes us to check $f\subset \set{0,\ldots,n}$ with complexity $\aggdeg{\prot}=5n+4$ as stated in Lemma \ref{lem:lookupprot}. 
+By using $d=n+1$, the above protocol allows us to check $f\subset \set{0,\ldots,n}$ with complexity $\aggdeg{\prot}=5n+4$ as stated in Lemma \ref{lem:lookupprot}. 
 We present an alternative protocol with the same complexity that will allow us to check $f\subset \set{0,\ldots,2n-2}$.
 %almost exactly the same complexity ($5n+5$ instead of $5n+4$).
 In fact, the protocol naturally generalizes for ranges $\set{0,\ldots,c(n-1)}$ while only increasing the degree of verifier constraints. Thus, one may choose a larger $c$ in protocols where the range proof is a subroutine, according to the maximal constraint degree in other parts of the protocol.
