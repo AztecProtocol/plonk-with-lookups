@@ -593,7 +593,7 @@ $\sone (\hgen^i) = s_i$ for $i\in [n+1]$; and $\stwo(\hgen ^i)= s_{n+i}$ for eac
 \item For $2\leq i \leq n$
 % \[Z(\hgen^i)=(1+\beta)^{i-1}\prod_{1\leq j<i} (\gamma + f(\hgen^j))/(\gamma(1+\beta) + s(\hgen^j) + \beta s(\hgen^{j+1})),\] 
 % \item For $1\leq i \leq n+1$,
-\[Z(\hgen^{i})= \frac{(1+\beta)^n \prod_{j < i} (\gamma + f_j)\cdot \prod_{1\leq j < i} (\gamma(1+\beta)+ t_j + \beta t_{j+1})}{\prod_{1\leq j <i} (\gamma(1+\beta)+ s_j + \beta s_{j+1})(\gamma(1+\beta)+ s_{n+j} + \beta s_{n+j+1})},\]
+\[Z(\hgen^{i})= \frac{(1+\beta)^{i-1} \prod_{j < i} (\gamma + f_j)\cdot \prod_{1\leq j < i} (\gamma(1+\beta)+ t_j + \beta t_{j+1})}{\prod_{1\leq j <i} (\gamma(1+\beta)+ s_j + \beta s_{j+1})(\gamma(1+\beta)+ s_{n+j} + \beta s_{n+j+1})},\]
  and
 \item $Z(\hgen^{n+1})=1$.
 \end{enumerate}
@@ -631,7 +631,7 @@ In total we get $5n+4$.
 
 We proceed to prove correctness. The check in step \ref{check:consist} shows that $\sone(\hgen^{n+1})=\stwo(\hgen)$, and thus $\sone,\stwo$ indeed consistently describe a single vector $s\in \F^{2n+1}$.
 Using Claim \ref{clm:main_lookup} we know that when $f$'s range is not contained in $t$'s for any choice of $s$ sent by \prvpoly the polynomials $F(X,Y), G(X,Y)$ are different.
- From the SZ lemma e.w.p \negl \verpoly chooses $\beta,\gamma$ such that $F(\beta,\gamma)\neq G(\beta,\gamma)$. In this case we have $Z(\hgen^{n+d})\neq 1$ which means \verpoly rejects.
+ From the SZ lemma e.w.p \negl \verpoly chooses $\beta,\gamma$ such that $F(\beta,\gamma)\neq G(\beta,\gamma)$. In this case we have $Z(\hgen^{n+1})\neq 1$ which means \verpoly rejects.
 \end{proof}
 
 \section{Generalizing to vector lookups and multiple tables}
@@ -779,7 +779,7 @@ Since $\gamma \in \F$ is chosen uniformly it follows that \verpoly accepts with 
 
 \section*{Acknowledgements} 
 We thank Jens Groth for introducing us to the lookup protocol of \cite{arya}.
-
+We thank Kevaundray Wedderburn for comments and corrections
 % 
 % Let us measure the cost of this in terms of auxiliary polynomials given.
 % \prv would need to send the sorted polynomial $s\in \polysofdeg{n+d}$.
