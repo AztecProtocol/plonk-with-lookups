@@ -424,8 +424,8 @@ and \set{t_i}. Note that if $f\subset t$, and every element of $t$ appears at le
 having the same difference set as \set{t_i}, but with the differences appearing in \emph{different order}; and in this case we won't have $s\subset t$.
 As an illustrating example, take
 \[t=\set{1,4,8}, s = \set{1,1,4,8,8,8}, s' = \set{1,5,5,5,8,8}\]
-All three sets have the same difference set \set{3,4}; but since those differences appear in different order in $s'$ and $t$, we don't have $s'\subset t$. We also didn't address checking the starting point is the same in $s$ and $t$.
-Both these issues can be solved by comparing \emph{randomized} difference sets:
+All three sets have the same difference set \set{3,4}; but since those differences appear in different order in $s'$ and $t$, we don't have $s'\subset t$. Though not an issue in the above examples, we also didn't address checking the starting point is the same in $s$ and $t$.
+Both issues can be solved by comparing \emph{randomized} difference sets:
 We choose random $\beta \in \F$, and compare the elements in the sequences 
 \sett{t_i+\beta t_{i+1}}{i\in [d-1]}, \sett{s_i +\beta s_{i+1}}{i\in [n-1]}.
 
@@ -449,7 +449,7 @@ In such a protocol a prover \prv sends polynomials of a certain degree bound $d$
 
 More precisely,
 \begin{dfn}\label{dfn:polyprotocol}
-Fix a positive integers $d,D,t,\ell$ and $H\subset \F$.
+Fix positive integers $d,D,t,\ell$ and $H\subset \F$.
 An $H$-ranged \emph{$(d,D,t,\ell)$-polynomial protocol} is a multiround protocol between a prover \prvpoly, verifier 
 \verpoly and trusted party \ideal that proceeds as follows.
 
@@ -550,7 +550,7 @@ we have
  That is, we have a one-to-one map $j:P\to [n]$ such that for each $i\in P$, $s_i = f_{j(i)}$.
  For each $i\in P$, the corresponding factor of $G$, will be
  \[ \gamma + (s_i + \beta s_{i+1})/(1+\beta)= \gamma + s_i,\]
- which, for the matching $j$ such that $s_i =f_j$, equals the factor $(\gamma + f_j)$ in $F$.
+ which equals the factor $\gamma + f_{j(i)}$ in $F$.
  
  
  For the other direction, assume $F\equiv G$ as polynomials in $\F[\beta,\gamma]$.  
@@ -779,7 +779,7 @@ Since $\gamma \in \F$ is chosen uniformly it follows that \verpoly accepts with 
 
 \section*{Acknowledgements} 
 We thank Jens Groth for introducing us to the lookup protocol of \cite{arya}.
-We thank Kevaundray Wedderburn for comments and corrections
+We thank Kevaundray Wedderburn for comments and corrections.
 % 
 % Let us measure the cost of this in terms of auxiliary polynomials given.
 % \prv would need to send the sorted polynomial $s\in \polysofdeg{n+d}$.
