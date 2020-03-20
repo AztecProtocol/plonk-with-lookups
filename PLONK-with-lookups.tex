@@ -82,7 +82,7 @@
 \newcommand{\bsigma}{\boldsymbol{\sigma}}
 %%% the "real" document content comes below...
 %\newcommand{\papertitle}{$\mathsf{Maitreya}$: Improved Prover Efficiency in Fully Succinct Universal zk-SNARKs through Permutation Arguments for Multiplicative Subgroups}
-\newcommand{\papertitle}{A simplified polynomial protocol for lookup tables}
+\newcommand{\papertitle}{${ \mathpgoth{\Large plookup}}$: A simplified polynomial protocol for lookup tables}
 %\newcommand{\authorname}}
 \newcommand{\company}{}
 \title{ \bf \papertitle \\[0.72cm]}
@@ -95,6 +95,12 @@
            % otherwise the current date is printed 
 	
 \ProvidesPackage{numdef}
+\newcommand{\alphabet}{abcdefghijklmnopqrs\/tuvwxyz}
+\newcommand{\Alphabet}{ABCDEFGHIJKLMNOPQRSTUVWXYZ}
+
+\DeclareMathAlphabet{\mathpgoth}{OT1}{pgoth}{m}{n}
+\DeclareMathAlphabet{\mathesstixfrak}{U}{esstixfrak}{m}{n}
+\DeclareMathAlphabet{\mathboondoxfrak}{U}{BOONDOX-frak}{m}{n}
 
 %% Ariel Macros:
 \num\newcommand{\G1}{\ensuremath{{\mathbb G}_1}\xspace}
@@ -411,7 +417,7 @@ $F(X) = \prod_{i\in [d]} (X-t_i)^{e_i}$.
 Bootle et. al \cite{arya} gave an algorithm for this exact problem, also in the context of efficient SNARK arithmetization of a common operation (in their case, repeatedly checking that field elements correspond to certain convenient sparse representations of boolean strings).
 
 Their algorithm requires committing to a vector of length $d\log n$ that contains
-for each $i\in [d], j\in [\log n] $ the value $t_i^{2^j}$.
+for each $i\in [d], j\in [\log n] $ the value $(x-t_i)^{2^j}$ for a random verifier challenge $x\in\F$.
 They also commit to the binary decomposition of the \set{e_i},
 and using the two, prove that $F$ is of the desired form.
 
@@ -776,10 +782,13 @@ Since $\gamma \in \F$ is chosen uniformly it follows that \verpoly accepts with 
  
  \end{proof}
 
+ 
+ 
+ 
 
 \section*{Acknowledgements} 
 We thank Jens Groth for introducing us to the lookup protocol of \cite{arya}.
-We thank Kevaundray Wedderburn for comments and corrections.
+We thank Kevaundray Wedderburn for comments and corrections and the name plookup.
 % 
 % Let us measure the cost of this in terms of auxiliary polynomials given.
 % \prv would need to send the sorted polynomial $s\in \polysofdeg{n+d}$.
