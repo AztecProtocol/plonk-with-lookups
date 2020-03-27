@@ -409,7 +409,7 @@ Examples of operations with large overhead, are ones involving bit decomposition
 
 We investigate an alternative approach, where for commonly used operations we precompute a lookup table of the legitimate (input, output) combinations; and the prover argues the witness values exist in this table.
 
-Using randomness, we can reduce to the case of looking up single field elements instead of tupples. Then, in polynomial language, this ultimately boils down to proving polynomials are the same ``up to multiplicities''.
+Using randomness, we can reduce to the case of looking up single field elements instead of tuples. Then, in polynomial language, this ultimately boils down to proving polynomials are the same ``up to multiplicities''.
 That is, suppose that the values in the lookup table are \sett{t_i}{i\in [d]} and the values in the witness are \sett{f_i}{i\in [n]}. We want to show that the polynomials
 \[F(X)\defeq \prod_{i\in [n]} (X-f_i), G(X)\defeq \prod_{i\in [d]}(X-t_i)\]
 have the same roots, ignoring multiplicites; i.e. that for some non-negative integers \sett{e_i}{i\in [d]} we  have
